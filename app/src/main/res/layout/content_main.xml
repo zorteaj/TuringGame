@@ -33,7 +33,7 @@
         android:layout_below="@+id/linearLayout"
         android:layout_centerHorizontal="true"
         android:background="#bcf2f4"
-        android:id="@+id/linearLayout2">
+        android:id="@+id/peersButton_LinearLayout">
 
         <Button
             android:layout_width="wrap_content"
@@ -48,21 +48,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="#f43838"
-            android:clickable="true"
-            android:id="@+id/peer1_LinearLayout">
+            android:background="#eb6666"
+            android:id="@+id/peers_LinearLayout">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Undiscovered 1"
-                android:id="@+id/textView4" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Answer: "
-                android:id="@+id/textView5" />
+                android:text="No Peers"
+                android:id="@+id/textView2" />
         </LinearLayout>
 
     </LinearLayout>
@@ -71,7 +64,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/linearLayout2"
+        android:layout_below="@+id/peersButton_LinearLayout"
         android:layout_centerHorizontal="true"
         android:background="#f8eb75">
 

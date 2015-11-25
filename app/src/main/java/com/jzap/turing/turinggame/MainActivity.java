@@ -2,18 +2,24 @@ package com.jzap.turing.turinggame;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.view.ViewGroup.LayoutParams;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements PeerDisplayActivity {
 
     private static final String mTag = "MainActivity";
 
@@ -21,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
     private WifiP2pManager.Channel mChannel = null;
     private WifiP2pBroadcastReceiver mReceiver = null;
 
+    private List mPeers = new ArrayList();
+
+    private LinearLayout mPeers_LinearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        initializeUiViews();
         initializeWifiP2pNetwork();
     }
 
@@ -62,6 +72,26 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onResume() {
+        Log.i(mTag, "On Resume");
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Log.i(mTag, "On Pause");
+        super.onPause();
+        if(mReceiver != null) {
+            unregisterReceiver(mReceiver);
+        }
+    }
+
+    private void initializeUiViews() {
+        mPeers_LinearLayout = (LinearLayout) findViewById(R.id.peers_LinearLayout);
+    }
+
 
     private void initializeWifiP2pNetwork() {
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
@@ -90,6 +120,27 @@ public class MainActivity extends AppCompatActivity {
 
     public void discoverPeersClicked(View v) {
         Log.i(mTag, "Discover Peers Button Clicked");
+
+        if(mManager != null) {
+            mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+
+                @Override
+                public void onSuccess() {
+                    // Code for when the discovery initiation is successful goes here.
+                    // No services have actually been discovered yet, so this method
+                    // can often be left blank.  Code for peer discovery goes in the
+                    // onReceive method, detailed below.
+                    Log.i(mTag, "Discovery Initiation Successful");
+                }
+
+                @Override
+                public void onFailure(int reasonCode) {
+                    // Code for when the discovery initiation fails goes here.
+                    // Alert the user that something went wrong.
+                    Log.d(mTag, "Discovery initiation Failed.  [Reason Code: " + reasonCode + "]");
+                }
+            });
+        }
     }
 
     public void beginGameClicked(View v) {
@@ -98,5 +149,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void submitAnswerClicked(View v) {
         Log.i(mTag, "Submit Answer Button Clicked");
+    }
+
+    @Override
+    public void setPeers(List peers) {
+
+        mPeers_LinearLayout.removeAllViews();
+
+        for(int i = 0; i < peers.size(); i++) {
+            TextView peerDeviceName_TextView = new TextView(this);
+            WifiP2pDevice device = (WifiP2pDevice) peers.get(i);
+            peerDeviceName_TextView.setText(device.deviceName);
+            peerDeviceName_TextView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+            mPeers_LinearLayout.addView(peerDeviceName_TextView);
+        }
     }
 }
