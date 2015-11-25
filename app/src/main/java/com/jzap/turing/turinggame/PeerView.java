@@ -1,6 +1,8 @@
 package com.jzap.turing.turinggame;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,11 +15,27 @@ public class PeerView extends LinearLayout {
 
     private TextView mDeviceName;
     private TextView mAnswer;
+    private ViewGroup.LayoutParams mLayoutParams;
 
-    public PeerView(Context context, String devicename, String answer) {
+    // TODO : Give these a boarder so visually distinguishable
+
+    public PeerView(Context context, String deviceName, String answer) {
         super(context);
-        mDeviceName.setText(devicename);
+
+        this.setBackgroundColor(Color.GREEN);
+        this.setOrientation(VERTICAL);
+
+        mDeviceName = new TextView(context);
+        mAnswer = new TextView(context);
+
+        mLayoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        mDeviceName.setText(deviceName);
         mAnswer.setText(answer);
+
+        mDeviceName.setLayoutParams(mLayoutParams);
+        mAnswer.setLayoutParams(mLayoutParams);
+
         createView();
     }
 
@@ -25,6 +43,4 @@ public class PeerView extends LinearLayout {
         this.addView(mDeviceName);
         this.addView(mAnswer);
     }
-
-
 }

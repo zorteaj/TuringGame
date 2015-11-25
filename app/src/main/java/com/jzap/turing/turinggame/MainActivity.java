@@ -157,11 +157,15 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
         mPeers_LinearLayout.removeAllViews();
 
         for(int i = 0; i < peers.size(); i++) {
-            TextView peerDeviceName_TextView = new TextView(this);
+           // TextView peerDeviceName_TextView = new TextView(this);
             WifiP2pDevice device = (WifiP2pDevice) peers.get(i);
-            peerDeviceName_TextView.setText(device.deviceName);
-            peerDeviceName_TextView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-            mPeers_LinearLayout.addView(peerDeviceName_TextView);
+
+
+            PeerView peer = new PeerView(this, device.deviceName, "Answer: ");
+
+            peer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+            mPeers_LinearLayout.addView(peer);
         }
     }
+
 }
