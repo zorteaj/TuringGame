@@ -25,13 +25,7 @@ abstract public class Session implements Runnable {
     protected ObjectInputStream mIn = null;
     protected ObjectOutputStream mOut = null;
 
-    Session(MainActivity mainActivity, Handler handler) { // TODO : For testing only
-        mState = STATE.COLD; // TODO : Use this?
-        mMainActivity = mainActivity;
-        mHandler = handler;
-    }
-
-    Session(Handler handler) {
+    protected Session(Handler handler) {
         mState = STATE.COLD; // TODO : Use this?
         mHandler = handler;
     }

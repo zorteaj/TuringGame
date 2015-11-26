@@ -2,59 +2,60 @@ package com.jzap.turing.turinggame;
 
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
+import com.jzap.turing.turinggame.NLP.QuestionGenerator;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.net.InetSocketAddress;
+
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+
 
 /**
  * Created by JZ_W541 on 11/25/2015.
  */
 public class GroupOwnerSession extends Session {
 
-    GroupOwnerSession(MainActivity activity, Handler handler) {
-        super(activity, handler); // TODO : Only for test
-    }
-
     private static final String mTag = "GroupOwnerSession";
 
-    private ServerSocket mServerSocket;
+    private ServerSocket mServerSocket = null;
+    private QuestionGenerator mQuestionGenerator = null;
+
+    public GroupOwnerSession(Handler handler) {
+        super(handler); // TODO : Only for test
+        mQuestionGenerator = new QuestionGenerator();
+    }
 
     @Override
     public void run() {
+
+        Log.i(mTag, "Owner Run");
 
         init();
 
         while(mState != STATE.TERMINATE) {
 
-          //  final Message message = null;
+            Message message = null;
 
             try {
-                if(mSocket.isConnected()) { // TODO : Not so sure about this
-                    final Message message = (Message) mIn.readObject();
-                    Log.i(mTag, "Received message: " + message.getBody());
+                if(mSocket.isConnected()) { // TODO : Not so sure about this check
 
-                    mHandler.obtainMessage(MessageTypes.QUESTION, message.getBody()).sendToTarget();
+                    message = (Message) mIn.readObject();
+                    Message.Type messageType = message.getType();
 
-                    // TODO : Only for testing
-                    mMainActivity.runOnUiThread(new Runnable() {
+                    mHandler.obtainMessage(MessageTypes.QUESTION, message.getBody()).sendToTarget(); // TODO : Just for testing
 
-                        @Override
-                        public void run() {
-                            Toast.makeText(mMainActivity.getBaseContext(), message.getBody(),
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    Log.i(mTag, "Entering Owner switch");
 
-
+                    switch(messageType) {
+                        case QUESTION_REQUEST :
+                                Log.i(mTag, "QUESTION REQUEST RECEIVED");
+                                processQuestionRequest();
+                            break;
+                        case ANSWER : processAnswer(message);
+                            break;
+                    } // TODO : Add all types
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -104,6 +105,33 @@ public class GroupOwnerSession extends Session {
     @Override
     protected void sendMessage() {
 
+    }
+
+    private void processQuestionRequest() {
+        Log.i(mTag, "Processing Question Request");
+        if(mQuestionGenerator == null) {
+            return;
+        }
+        String question = mQuestionGenerator.fetchQuestion();
+        publishQuestion(question);
+    }
+
+    private void publishQuestion(String question) {
+        // Display on this device
+        mHandler.obtainMessage(MessageTypes.QUESTION, question).sendToTarget();
+
+        // Create question Message and publish to peer device(s)
+        Message questionMessage = new Message(Message.Type.QUESTION, question);
+        try {
+            mOut.writeObject(questionMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void processAnswer(Message message) {
+        // For inter-thread communication, so question can be displayed on UI
+        mHandler.obtainMessage(MessageTypes.ANSWER, message.getBody()).sendToTarget();
     }
 
 }

@@ -150,7 +150,7 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
 
                 // We are connected with the other device, request connection
                 // info to find group owner IP
-                WifiP2pSessionManager sessionManager = new WifiP2pSessionManager((MainActivity) mActivity,  mActivity.getSessionMessageHandler());  // TODO : Only for test
+                WifiP2pSessionManager sessionManager = new WifiP2pSessionManager(mActivity.getSessionMessageHandler());  // TODO : Only for test
                 mActivity.setSessionManager(sessionManager); // So that we can kill session from MainActivity (i.e., from onPause)
                 mManager.requestConnectionInfo(mChannel, sessionManager);
             } else {

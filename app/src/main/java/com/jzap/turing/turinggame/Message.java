@@ -7,17 +7,17 @@ import java.io.Serializable;
  */
 public class Message implements Serializable { // TODO : Rename to deconflict with android.os.Message
 
-    private String mType;
+    private Type mType;
     private String mBody;
 
-    private enum Type {QUESTION_REQUEST, ANSWER}
+    public enum Type {QUESTION_REQUEST, QUESTION, ANSWER}
 
-    Message(String type, String body) {
+    public Message(Type type, String body) {
         mType = type;
         mBody = body;
     }
 
-    public String getType() {
+    public Type getType() {
         return mType;
     }
 

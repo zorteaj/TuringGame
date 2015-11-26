@@ -11,7 +11,7 @@ public class SessionMessageHandler extends Handler {
 
     private PeerDisplayActivity mActivity;
 
-    SessionMessageHandler(PeerDisplayActivity activity) {
+    public SessionMessageHandler(PeerDisplayActivity activity) {
         mActivity = activity;
     }
 

@@ -12,7 +12,7 @@ public class WifiP2pConnectionActionListener implements WifiP2pManager.ActionLis
 
     WifiP2pBroadcastReceiver mReceiver;
 
-    WifiP2pConnectionActionListener(WifiP2pBroadcastReceiver receiver) {
+    public WifiP2pConnectionActionListener(WifiP2pBroadcastReceiver receiver) {
         super();
         mReceiver = receiver;
     }
