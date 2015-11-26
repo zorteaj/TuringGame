@@ -30,11 +30,11 @@ public class GroupOwnerSession extends Session {
     @Override
     public void run() {
 
-        Log.i(mTag, "Owner Run");
+        Log.i(mTag, "Owner Session Run");
 
         init();
 
-        while(mState != STATE.TERMINATE) {
+        while(mSessionState != SessionState.TERMINATE) {
 
             Message message = null;
 
@@ -44,18 +44,19 @@ public class GroupOwnerSession extends Session {
                     message = (Message) mIn.readObject();
                     Message.Type messageType = message.getType();
 
-                    mHandler.obtainMessage(MessageTypes.QUESTION, message.getBody()).sendToTarget(); // TODO : Just for testing
-
-                    Log.i(mTag, "Entering Owner switch");
+                    mHandler.obtainMessage(MessageTypes.CONTENT_QUESTION, message.getBody()).sendToTarget(); // TODO : Just for testing
 
                     switch(messageType) {
                         case QUESTION_REQUEST :
-                                Log.i(mTag, "QUESTION REQUEST RECEIVED");
+                                Log.i(mTag, "CONTENT_QUESTION REQUEST RECEIVED");
                                 processQuestionRequest();
                             break;
-                        case ANSWER : processAnswer(message);
+                        case ANSWER : ;
                             break;
                     } // TODO : Add all types
+
+
+                    listenForAndProcessAnswers(); // TODO : Clean all this up, trying to force a test!
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -95,6 +96,9 @@ public class GroupOwnerSession extends Session {
     @Override
     protected void answerQuestion() {
 
+        // TODO : Set AI Answer
+
+        super.answerQuestion();
     }
 
     @Override
@@ -103,7 +107,7 @@ public class GroupOwnerSession extends Session {
     }
 
     @Override
-    protected void sendMessage() {
+    protected void sendMessage(Message message) {
 
     }
 
@@ -118,7 +122,7 @@ public class GroupOwnerSession extends Session {
 
     private void publishQuestion(String question) {
         // Display on this device
-        mHandler.obtainMessage(MessageTypes.QUESTION, question).sendToTarget();
+        mHandler.obtainMessage(MessageTypes.CONTENT_QUESTION, question).sendToTarget();
 
         // Create question Message and publish to peer device(s)
         Message questionMessage = new Message(Message.Type.QUESTION, question);
@@ -128,10 +132,4 @@ public class GroupOwnerSession extends Session {
             e.printStackTrace();
         }
     }
-
-    private void processAnswer(Message message) {
-        // For inter-thread communication, so question can be displayed on UI
-        mHandler.obtainMessage(MessageTypes.ANSWER, message.getBody()).sendToTarget();
-    }
-
 }

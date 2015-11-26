@@ -29,5 +29,4 @@ public class QuestionGenerator {
         return mQuestions.get(random.nextInt(mQuestions.size())); // TODO : Make sure this is right
     }
 
-
 }

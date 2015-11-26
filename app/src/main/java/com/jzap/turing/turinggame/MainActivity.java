@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
@@ -31,11 +33,14 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     private WifiP2pSessionManager mSessionManager = null;
 
     private SessionMessageHandler mHandler = null;
+    private Session mSession = null;
 
     private List mPeers = new ArrayList();
 
     private LinearLayout mPeers_LinearLayout;
     private TextView mQuestion_TextView;
+    private Button mSubmitAnswer_Button;
+    private EditText mAnswer_EditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     }
 
     private void init() {
-        mHandler = new SessionMessageHandler(this); // TODO : Make sure I don't need to explicity pass in Main Looper
+        mHandler = new SessionMessageHandler(this);
         initializeUiViews();
         initializeWifiP2pNetwork();
     }
@@ -101,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     public void cleanUp() {
         if(mReceiver != null) {
             unregisterReceiver(mReceiver);
-            mReceiver.disconnect(); // TODO : At least check if I'm connected; probably allow user to do this manually
+            mReceiver.disconnect();
         }
         if(mSessionManager != null) {
             mSessionManager.terminate();
@@ -111,6 +116,11 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     private void initializeUiViews() {
         mPeers_LinearLayout = (LinearLayout) findViewById(R.id.peers_LinearLayout);
         mQuestion_TextView = (TextView) findViewById(R.id.question_TextView);
+
+        mSubmitAnswer_Button = (Button) findViewById(R.id.submitAnswer_Button);
+        mSubmitAnswer_Button.setClickable(false);
+
+        mAnswer_EditText = (EditText) findViewById(R.id.answer_EditText);
     }
 
     private void initializeWifiP2pNetwork() {
@@ -172,6 +182,10 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     public void submitAnswerClicked(View v) {
         Log.i(mTag, "Submit Answer Button Clicked");
+        if(mSession != null) {
+            //mSession.setState(Session.SessionState.ANSWERED);
+            mSession.setAnswer(mAnswer_EditText.getText().toString());
+        }
     }
 
     @Override
@@ -182,11 +196,14 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     @Override
     public void setPeers(List peers) {
 
+        // TODO : If user clicks set peers in the middle of the game, it will update the list and blank out answers.  Should probably disable this manually and automatically (in case
+        // a new person tries to join - might mess things ups
+
         mPeers_LinearLayout.removeAllViews();
 
         for(int i = 0; i < peers.size(); i++) {
             WifiP2pDevice device = (WifiP2pDevice) peers.get(i);
-            PeerView peer = new PeerView(this, device.deviceName, "Answer: ");
+            PeerView peer = new PeerView(this, device);
             peer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             mPeers_LinearLayout.addView(peer);
         }
@@ -200,6 +217,28 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     @Override
     public SessionMessageHandler getSessionMessageHandler() {
         return mHandler;
+    }
+
+    @Override
+    public Button getSubmitAnswerButton() {
+        return mSubmitAnswer_Button;
+    }
+
+    @Override
+    public void setSession(Session session) {
+        mSession = session;
+    }
+
+    @Override
+    public void setAnswer(String answer) {
+
+        for(int i = 0; i < mPeers_LinearLayout.getChildCount(); i++) {
+            if(mPeers_LinearLayout.getChildAt(i) instanceof PeerView) {
+                //if(((PeerView) mPeers_LinearLayout.getChildAt(i)).getDevice().deviceAddress == "Placeholder") { // TODO : Get device address
+                    ((PeerView) mPeers_LinearLayout.getChildAt(i)).setAnswer(answer);
+               // }
+            }
+        }
     }
 
 }

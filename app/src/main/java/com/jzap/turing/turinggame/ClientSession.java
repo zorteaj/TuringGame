@@ -30,30 +30,26 @@ public class ClientSession extends Session {
 
         init();
 
-        while(mState != STATE.TERMINATE) {
+        boolean once = true;
 
-            Message questionRequestMessage = new Message(Message.Type.QUESTION_REQUEST, "Just for test");
+        // Synchronously designed protocol
+        while (mSessionState != SessionState.TERMINATE) {  //  Todo: Make sure all blocking requests timeout so this condition is hit on termination, instead of app hanging
 
-            try {
-                if(mOut != null) {
-                    mOut.writeObject(questionRequestMessage);
+            if (mSessionState == SessionState.COLD) {
+                requestQuestion();
+            } else if (mSessionState == SessionState.WAITING_FOR_QUESTION) {
+                listenForAndProcessQuestion();
+            } else if (mSessionState == SessionState.ANSWERING) {
+                if(once) {
+                    mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
+                    once = false; // TODO : This is a test and in general is quite bad.  For one, button should be disabled afterwards again, adn this once thing is bad design and would need to be reset anyway
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else if (mSessionState == SessionState.SENDING_ANSWER) {
+                answerQuestion();
+            } else if (mSessionState == SessionState.ANSWERED) {
+                listenForAndProcessAnswers();
+                setState(SessionState.TERMINATE); // TODO : Just a test
             }
-
-            try {
-                Message questionMessage =  (Message) mIn.readObject();
-                if(questionMessage.getType() == Message.Type.QUESTION) {
-                    processQuestion(questionMessage.getBody());
-                }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            setState(STATE.TERMINATE); // TODO : Just a test
         }
 
         end();
@@ -64,7 +60,7 @@ public class ClientSession extends Session {
     protected void init() {
         mSocket = new Socket();
         try {
-            if(mSocket != null) {
+            if (mSocket != null) {
                 mSocket.connect(new InetSocketAddress(mGroupOwnerAddress, mPort)); // TODO : Add timeout?
                 mOut = new ObjectOutputStream(mSocket.getOutputStream());
                 mIn = new ObjectInputStream(mSocket.getInputStream());
@@ -81,7 +77,7 @@ public class ClientSession extends Session {
 
     @Override
     protected void answerQuestion() {
-
+        super.answerQuestion();
     }
 
     @Override
@@ -90,12 +86,38 @@ public class ClientSession extends Session {
     }
 
     @Override
-    protected void sendMessage() {
-
+    protected void sendMessage(Message message) {
+        try {
+            if(mOut != null) {
+                mOut.writeObject(message);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void processQuestion(String question) {
-        mHandler.obtainMessage(MessageTypes.QUESTION, question).sendToTarget();
+        mHandler.obtainMessage(MessageTypes.CONTENT_QUESTION, question).sendToTarget();
+        setState(SessionState.ANSWERING);
+    }
+
+    private void listenForAndProcessQuestion() {
+        try {
+            Message questionMessage =  (Message) mIn.readObject();
+            if(questionMessage.getType() == Message.Type.QUESTION) {
+                processQuestion(questionMessage.getBody());
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void requestQuestion() {
+        Message questionRequestMessage = new Message(Message.Type.QUESTION_REQUEST, "");
+        sendMessage(questionRequestMessage);
+        setState(SessionState.WAITING_FOR_QUESTION);
     }
 
 }

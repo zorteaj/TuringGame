@@ -3,7 +3,6 @@ package com.jzap.turing.turinggame;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
-import android.widget.Toast;
 
 
 /**
@@ -40,13 +39,14 @@ public class WifiP2pSessionManager implements WifiP2pManager.ConnectionInfoListe
         }
 
         if(mSession != null) {
+            mHandler.obtainMessage(MessageTypes.CONTENT_SESSION, mSession).sendToTarget(); // Pass Session reference to PeerDisplayActivity to sync UI state with Session state
             new Thread(mSession).start();
         }
 
     }
 
     public void terminate() {
-        mSession.setState(Session.STATE.TERMINATE);
+        mSession.setState(Session.SessionState.TERMINATE);
     }
 
 }

@@ -14,8 +14,8 @@ abstract public class Session implements Runnable {
 
     protected static final int mPort = 8886; // TODO : Is this number okay?
 
-    protected enum STATE {COLD, WAITING_FOR_QUESTION, ANSWERING, ANSWERED, TERMINATE} // TODO : Keep an eye on whether these get used
-    protected STATE mState;
+    protected enum SessionState {COLD, WAITING_FOR_QUESTION, ANSWERING, SENDING_ANSWER, ANSWERED, TERMINATE} // TODO : Keep an eye on whether these get used
+    protected SessionState mSessionState;
 
     protected MainActivity mMainActivity; // TODO : For testing only
 
@@ -25,18 +25,47 @@ abstract public class Session implements Runnable {
     protected ObjectInputStream mIn = null;
     protected ObjectOutputStream mOut = null;
 
+    protected String mAnswer = null;
+
     protected Session(Handler handler) {
-        mState = STATE.COLD; // TODO : Use this?
+        mSessionState = SessionState.COLD; // TODO : Use this?
         mHandler = handler;
     }
 
     abstract protected void init();
 
-    abstract protected void answerQuestion();
+    protected void answerQuestion() {
+        Message answerMessage = new Message(Message.Type.ANSWER, mAnswer);
+        sendMessage(answerMessage);
+        setState(SessionState.ANSWERED);
+    }
+
+    public void setAnswer(String answer) {
+        mAnswer = answer;
+        setState(SessionState.SENDING_ANSWER);
+    }
+
+    protected void listenForAndProcessAnswers() { // TODO : Make this a list of answers for multiple peers case
+        try {
+            Message answersMessage =  (Message) mIn.readObject();
+            if(answersMessage.getType() == Message.Type.ANSWER) {
+                processAnswers(answersMessage.getBody()); // TODO : Handle else
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void processAnswers(String answer) {
+        mHandler.obtainMessage(MessageTypes.CONTENT_ANSWER, answer).sendToTarget();
+       // setState(SessionState.ANSWERING); // TODO ????
+    }
 
     abstract protected void castVote();
 
-    abstract protected void sendMessage();
+    abstract protected void sendMessage(Message message);
 
     protected void end() {
         try {
@@ -48,8 +77,8 @@ abstract public class Session implements Runnable {
         }
     }
 
-    protected void setState(STATE state) {
-        mState = state;
+    protected void setState(SessionState sessionState) {
+        mSessionState = sessionState;
     }
 
 }

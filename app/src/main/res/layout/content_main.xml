@@ -15,13 +15,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:background="#f9d4d4"
         android:id="@+id/linearLayout">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Guest"
+            android:text="Account Placeholder"
             android:id="@+id/textView"
             android:layout_gravity="right" />
     </LinearLayout>
@@ -32,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayout"
         android:layout_centerHorizontal="true"
-        android:background="#bcf2f4"
+        android:background="#f0d2f4"
         android:id="@+id/peersButton_LinearLayout">
 
         <Button
@@ -48,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="#eb6666"
+            android:background="#f0d2f4"
             android:id="@+id/peers_LinearLayout">
 
             <TextView
@@ -66,7 +65,7 @@
         android:layout_height="fill_parent"
         android:layout_below="@+id/peersButton_LinearLayout"
         android:layout_centerHorizontal="true"
-        android:background="#f8eb75">
+        android:background="#f0d2f4">
 
         <Button
             android:layout_width="wrap_content"
@@ -81,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="#67baf2">
+            android:background="#f0d2f4">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -95,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="#f04343">
+            android:background="#f0d2f4">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -106,9 +105,8 @@
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/editText"
-                android:layout_weight="1"
-                android:background="#8afe8f" />
+                android:id="@+id/answer_EditText"
+                android:layout_weight="1" />
         </LinearLayout>
 
         <Button

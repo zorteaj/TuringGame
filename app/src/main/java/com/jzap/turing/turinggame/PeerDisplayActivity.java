@@ -1,5 +1,7 @@
 package com.jzap.turing.turinggame;
 
+import android.widget.Button;
+
 import java.util.List;
 
 /**
@@ -11,4 +13,7 @@ public interface PeerDisplayActivity {
     void setSessionManager(WifiP2pSessionManager sessionManager);
     void setQuestion(String question);
     SessionMessageHandler getSessionMessageHandler();
+    Button getSubmitAnswerButton(); // TODO : Ideally this interface would have the button, I think
+    void setSession(Session session); // TODO : Same as above
+    void setAnswer(String answer); // TODO : Same
 }

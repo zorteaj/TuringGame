@@ -1,46 +1,54 @@
 package com.jzap.turing.turinggame;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by JZ_W541 on 11/25/2015.
  */
 public class PeerView extends LinearLayout {
 
-    private TextView mDeviceName;
-    private TextView mAnswer;
+    private WifiP2pDevice mDevice = null;
+    private TextView mDeviceName_TextView;
+    private TextView mAnswer_TextView;
     private ViewGroup.LayoutParams mLayoutParams;
 
     // TODO : Give these a boarder so visually distinguishable
 
-    public PeerView(Context context, String deviceName, String answer) {
+    public PeerView(Context context, WifiP2pDevice device) {
         super(context);
 
-        this.setBackgroundColor(Color.GREEN);
+        this.setBackgroundColor(0xf0d2f4); // TODO : UI Update
         this.setOrientation(VERTICAL);
 
-        mDeviceName = new TextView(context);
-        mAnswer = new TextView(context);
+        mDevice = device;
+
+        mDeviceName_TextView = new TextView(context);
+        mAnswer_TextView = new TextView(context);
 
         mLayoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        mDeviceName.setText(deviceName);
-        mAnswer.setText(answer);
+        mDeviceName_TextView.setText(mDevice.deviceName);
 
-        mDeviceName.setLayoutParams(mLayoutParams);
-        mAnswer.setLayoutParams(mLayoutParams);
+        mDeviceName_TextView.setLayoutParams(mLayoutParams);
+        mAnswer_TextView.setLayoutParams(mLayoutParams);
 
         createView();
     }
 
     private void createView() {
-        this.addView(mDeviceName);
-        this.addView(mAnswer);
+        this.addView(mDeviceName_TextView);
+        this.addView(mAnswer_TextView);
+    }
+
+    public WifiP2pDevice getDevice() {
+        return mDevice;
+    }
+
+    public void setAnswer(String answer) {
+        mAnswer_TextView.setText("Answer: " + answer); // TODO : There are nicer ways to do this
     }
 }
