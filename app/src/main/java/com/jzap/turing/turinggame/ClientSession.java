@@ -22,8 +22,8 @@ public class ClientSession extends Session {
 
     private String mGroupOwnerAddress;
 
-    ClientSession(String groupOwnerAddress) {
-        super();
+    ClientSession(String groupOwnerAddress, SessionMessageHandler handler) {
+        super(handler);
         mGroupOwnerAddress = groupOwnerAddress;
     }
 

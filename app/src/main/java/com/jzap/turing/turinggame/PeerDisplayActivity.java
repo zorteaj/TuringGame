@@ -7,6 +7,8 @@ import java.util.List;
  */
 // TODO : Rename to something more descriptive
 public interface PeerDisplayActivity {
-    public void setPeers(List peers);
-    public void setSessionManager(WifiP2pSessionManager sessionManager);
+    void setPeers(List peers);
+    void setSessionManager(WifiP2pSessionManager sessionManager);
+    void setQuestion(String question);
+    SessionMessageHandler getSessionMessageHandler();
 }

@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by JZ_W541 on 11/25/2015.
  */
-public class Message implements Serializable {
+public class Message implements Serializable { // TODO : Rename to deconflict with android.os.Message
 
     private String mType;
     private String mBody;

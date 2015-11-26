@@ -1,6 +1,8 @@
 package com.jzap.turing.turinggame;
 
+import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +20,10 @@ import java.net.SocketTimeoutException;
  */
 public class GroupOwnerSession extends Session {
 
+    GroupOwnerSession(MainActivity activity, Handler handler) {
+        super(activity, handler); // TODO : Only for test
+    }
+
     private static final String mTag = "GroupOwnerSession";
 
     private ServerSocket mServerSocket;
@@ -29,11 +35,27 @@ public class GroupOwnerSession extends Session {
 
         while(mState != STATE.TERMINATE) {
 
-            Message message = null;
+          //  final Message message = null;
 
             try {
-                message = (Message) mIn.readObject();
-                Log.i(mTag, "Received message: " + message.getBody());
+                if(mSocket.isConnected()) { // TODO : Not so sure about this
+                    final Message message = (Message) mIn.readObject();
+                    Log.i(mTag, "Received message: " + message.getBody());
+
+                    mHandler.obtainMessage(MessageTypes.QUESTION, message.getBody()).sendToTarget();
+
+                    // TODO : Only for testing
+                    mMainActivity.runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            Toast.makeText(mMainActivity.getBaseContext(), message.getBody(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+
+                }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {

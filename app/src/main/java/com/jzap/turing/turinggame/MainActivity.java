@@ -5,6 +5,7 @@ import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +30,12 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     private WifiP2pSessionManager mSessionManager = null;
 
+    private SessionMessageHandler mHandler = null;
+
     private List mPeers = new ArrayList();
 
     private LinearLayout mPeers_LinearLayout;
+    private TextView mQuestion_TextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
             }
         });
 
-        initializeUiViews();
-        initializeWifiP2pNetwork();
+        init();
+
     }
 
     @Override
@@ -87,6 +92,12 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
         cleanUp();
     }
 
+    private void init() {
+        mHandler = new SessionMessageHandler(this); // TODO : Make sure I don't need to explicity pass in Main Looper
+        initializeUiViews();
+        initializeWifiP2pNetwork();
+    }
+
     public void cleanUp() {
         if(mReceiver != null) {
             unregisterReceiver(mReceiver);
@@ -99,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     private void initializeUiViews() {
         mPeers_LinearLayout = (LinearLayout) findViewById(R.id.peers_LinearLayout);
+        mQuestion_TextView = (TextView) findViewById(R.id.question_TextView);
     }
 
     private void initializeWifiP2pNetwork() {
@@ -163,24 +175,31 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     }
 
     @Override
+    public void setQuestion(String question) {
+        mQuestion_TextView.setText("Question: " + question); // TODO : There are nicer ways of doing this
+    }
+
+    @Override
     public void setPeers(List peers) {
 
         mPeers_LinearLayout.removeAllViews();
 
         for(int i = 0; i < peers.size(); i++) {
-           // TextView peerDeviceName_TextView = new TextView(this);
             WifiP2pDevice device = (WifiP2pDevice) peers.get(i);
-
-
             PeerView peer = new PeerView(this, device.deviceName, "Answer: ");
-
             peer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             mPeers_LinearLayout.addView(peer);
         }
     }
 
+    @Override
     public void setSessionManager(WifiP2pSessionManager sessionManager) {
         mSessionManager = sessionManager;
+    }
+
+    @Override
+    public SessionMessageHandler getSessionMessageHandler() {
+        return mHandler;
     }
 
 }

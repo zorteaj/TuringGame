@@ -15,12 +15,13 @@ public class WifiP2pSessionManager implements WifiP2pManager.ConnectionInfoListe
 
     private Session mSession;
     private String mGroupOwnerAddress;
-    private Thread mSessionThread = null;
-    //private PeerDisplayActivity mActivity;
+    private MainActivity mActivity; // TODO : Only for testing
+    private SessionMessageHandler mHandler;
 
-    WifiP2pSessionManager(PeerDisplayActivity activity) {
+    WifiP2pSessionManager(MainActivity activity, SessionMessageHandler handler) {
         super();
-       // mActivity = activity;
+        mActivity = activity;
+        mHandler = handler;
     }
 
     @Override
@@ -33,11 +34,11 @@ public class WifiP2pSessionManager implements WifiP2pManager.ConnectionInfoListe
         // After the group negotiation, we can determine the group owner.
         if (info.groupFormed && info.isGroupOwner) {
             Log.i(mTag, "I'm the group owner");
-            mSession = new GroupOwnerSession();
+            mSession = new GroupOwnerSession(mActivity, mHandler);
         } else if (info.groupFormed) {
             // The other device acts as the client.
             Log.i(mTag, "I'm not the group owner");
-            mSession = new ClientSession(mGroupOwnerAddress);
+            mSession = new ClientSession(mGroupOwnerAddress, mHandler);
         }
 
         if(mSession != null) {

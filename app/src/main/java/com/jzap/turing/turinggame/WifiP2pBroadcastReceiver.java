@@ -59,7 +59,6 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
     };
 
     public void disconnect() {
-
         if(mConnected) {
             mManager.removeGroup(mChannel, new WifiP2pManager.ActionListener() {
                 @Override
@@ -72,15 +71,13 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
                     Log.i(mTag, "Failed to removed group");
                 }
             });
-//            mActivity.setmConnected_text(false);
-//            mActivity.setmDisconnected_text(true);
         }
     }
 
     // @Override
     public void connect() {
 
-        Log.i(mTag, "Checking to see if I'm already connected...");
+        Log.i(mTag, "Checking to see if I'm already connected..."); // TODO : Get rid of all these logs if no longer useful
 
         if (!mConnected) {
 
@@ -117,16 +114,12 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
             // the Activity.
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if(state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
-/*                mActivity.wifiP2pEnabledToast();
-                mActivity.setmInit_text(true);*/
+                // It may be desirable to record this for debugging
             } else {
-/*                mActivity.wifiP2pDisabledToast();
-                mActivity.setmInit_text(false);*/
+                // It may be desirable to record this for debugging
             }
         } else if(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
             Log.i(mTag, "WIFI_P2P_PEERS_CHANGED_ACTION");
-
-            //mActivity.peersChangedToast();
 
             // The peer list has changed!  We should probably do something about
             // that.
@@ -152,32 +145,19 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
                     .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if(networkInfo.isConnected()) {
-
-                mConnected = true;
-
                 Log.i(mTag, "Connected!");
-
-/*                mActivity.toastConnected();
-                mActivity.setmConnected_text(true);
-                mActivity.setmDisconnected_text(false);*/
+                mConnected = true;
 
                 // We are connected with the other device, request connection
                 // info to find group owner IP
-
-                WifiP2pSessionManager sessionManager = new WifiP2pSessionManager(mActivity);
-                mActivity.setSessionManager(sessionManager);
+                WifiP2pSessionManager sessionManager = new WifiP2pSessionManager((MainActivity) mActivity,  mActivity.getSessionMessageHandler());  // TODO : Only for test
+                mActivity.setSessionManager(sessionManager); // So that we can kill session from MainActivity (i.e., from onPause)
                 mManager.requestConnectionInfo(mChannel, sessionManager);
             } else {
                 mConnected = false;
-/*                mActivity.toastDisconnected();
-                mActivity.setmConnected_text(false);
-                mActivity.setmDisconnected_text(true);*/
             }
-
         } else if(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             Log.i(mTag, "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
-        } else {
-            Log.i(mTag, "NONE OF THE ACTIONS YOU WERE EXPECTING");
         }
     }
 }
