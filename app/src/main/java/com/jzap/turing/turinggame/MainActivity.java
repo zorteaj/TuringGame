@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.view.ViewGroup.LayoutParams;
 
 import java.util.ArrayList;
@@ -26,6 +25,8 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     private WifiP2pManager mManager = null;
     private WifiP2pManager.Channel mChannel = null;
     private WifiP2pBroadcastReceiver mReceiver = null;
+
+    private WifiP2pSessionManager mSessionManager = null;
 
     private List mPeers = new ArrayList();
 
@@ -83,15 +84,22 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     public void onPause() {
         Log.i(mTag, "On Pause");
         super.onPause();
+        cleanUp();
+    }
+
+    public void cleanUp() {
         if(mReceiver != null) {
             unregisterReceiver(mReceiver);
+            mReceiver.disconnect(); // TODO : At least check if I'm connected; probably allow user to do this manually
+        }
+        if(mSessionManager != null) {
+            mSessionManager.terminate();
         }
     }
 
     private void initializeUiViews() {
         mPeers_LinearLayout = (LinearLayout) findViewById(R.id.peers_LinearLayout);
     }
-
 
     private void initializeWifiP2pNetwork() {
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
@@ -145,6 +153,9 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     public void beginGameClicked(View v) {
         Log.i(mTag, "Begin Game Button Clicked");
+        if(mReceiver != null) {
+            mReceiver.connect();
+        }
     }
 
     public void submitAnswerClicked(View v) {
@@ -166,6 +177,10 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
             peer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             mPeers_LinearLayout.addView(peer);
         }
+    }
+
+    public void setSessionManager(WifiP2pSessionManager sessionManager) {
+        mSessionManager = sessionManager;
     }
 
 }
