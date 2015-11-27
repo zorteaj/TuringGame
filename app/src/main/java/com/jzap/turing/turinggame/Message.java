@@ -19,7 +19,7 @@ public class Message implements Serializable { // TODO : Rename to deconflict wi
         mBody = body;
     }
 
-    public String getId() {
+    public String getPlayerId() {
         return mPlayerId;
     }
 

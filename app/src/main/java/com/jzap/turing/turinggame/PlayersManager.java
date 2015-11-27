@@ -48,6 +48,13 @@ public class PlayersManager {
 
     public void processAnswer(Message message) {
         Log.i(mTag, "Answer = "  + message.getBody());
+        Player player = null;
+        if((player = findPlayerById(message.getPlayerId())) != null) {
+            player.setAnswer(message.getBody());
+        } else {
+            // TODO : Add player??
+            Log.i(mTag, "Trying to process answer, but player does not exist");
+        }
     }
 
     public void setThisPlayer(Player player) {
@@ -57,5 +64,18 @@ public class PlayersManager {
 
     public Player getThisPlayer() {
         return mThisPlayer;
+    }
+
+    Player findPlayerById(String id) {
+        Player player = null;
+        for(int i = 0; i < mPlayers.size(); i++) {
+
+            Log.i(mTag, "in id = " + id + ", mPlayer(" + id + ") = " + mPlayers.get(i).getId());
+
+            if(id.equals(mPlayers.get(i).getId())) {
+                player = mPlayers.get(i);
+            }
+        }
+        return player;
     }
 }
