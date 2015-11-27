@@ -17,8 +17,7 @@ abstract public class Session implements Runnable {
     protected enum SessionState {COLD, WAITING_FOR_QUESTION, ANSWERING, SENDING_ANSWER, ANSWERED, TERMINATE} // TODO : Keep an eye on whether these get used
     protected SessionState mSessionState;
 
-    protected MainActivity mMainActivity; // TODO : For testing only
-
+    protected PlayersManager mPlayersManager;
     protected Handler mHandler;
 
     protected Socket mSocket = null;
@@ -27,15 +26,16 @@ abstract public class Session implements Runnable {
 
     protected String mAnswer = null;
 
-    protected Session(Handler handler) {
-        mSessionState = SessionState.COLD; // TODO : Use this?
+    protected Session(PlayersManager manager, Handler handler) {
+        mPlayersManager = manager;
         mHandler = handler;
+        mSessionState = SessionState.COLD; // TODO : Use this?
     }
 
     abstract protected void init();
 
     protected void answerQuestion() {
-        Message answerMessage = new Message(Message.Type.ANSWER, mAnswer);
+        Message answerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer);
         sendMessage(answerMessage);
         setState(SessionState.ANSWERED);
     }
@@ -49,7 +49,8 @@ abstract public class Session implements Runnable {
         try {
             Message answersMessage =  (Message) mIn.readObject();
             if(answersMessage.getType() == Message.Type.ANSWER) {
-                processAnswers(answersMessage.getBody()); // TODO : Handle else
+                mPlayersManager.processAnswer(answersMessage);
+                //processAnswers(answersMessage.getBody()); // TODO : Handle else
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -58,10 +59,11 @@ abstract public class Session implements Runnable {
         }
     }
 
-    protected void processAnswers(String answer) {
-        mHandler.obtainMessage(MessageTypes.CONTENT_ANSWER, answer).sendToTarget();
+   // protected void processAnswers(String answer) {
+        //mPlayersManager.
+       // mHandler.obtainMessage(MessageTypes.CONTENT_ANSWER, answer).sendToTarget();
        // setState(SessionState.ANSWERING); // TODO ????
-    }
+   // }
 
     abstract protected void castVote();
 

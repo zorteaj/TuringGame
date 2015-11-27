@@ -9,7 +9,7 @@ import android.widget.TextView;
 /**
  * Created by JZ_W541 on 11/25/2015.
  */
-public class PeerView extends LinearLayout {
+public class PlayerView extends LinearLayout {
 
     private WifiP2pDevice mDevice = null;
     private TextView mDeviceName_TextView;
@@ -18,21 +18,14 @@ public class PeerView extends LinearLayout {
 
     // TODO : Give these a boarder so visually distinguishable
 
-    public PeerView(Context context, WifiP2pDevice device) {
+    public PlayerView(Context context, WifiP2pDevice device) {
         super(context);
 
-        this.setBackgroundColor(0xf0d2f4); // TODO : UI Update
-        this.setOrientation(VERTICAL);
-
         mDevice = device;
-
         mDeviceName_TextView = new TextView(context);
         mAnswer_TextView = new TextView(context);
-
         mLayoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         mDeviceName_TextView.setText(mDevice.deviceName);
-
         mDeviceName_TextView.setLayoutParams(mLayoutParams);
         mAnswer_TextView.setLayoutParams(mLayoutParams);
 
@@ -40,12 +33,15 @@ public class PeerView extends LinearLayout {
     }
 
     private void createView() {
+        configureView();
         this.addView(mDeviceName_TextView);
         this.addView(mAnswer_TextView);
     }
 
-    public WifiP2pDevice getDevice() {
-        return mDevice;
+    private void configureView() {
+        this.setBackgroundColor(0xf0d2f4); // TODO : UI Update
+        this.setOrientation(VERTICAL);
+        this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     public void setAnswer(String answer) {

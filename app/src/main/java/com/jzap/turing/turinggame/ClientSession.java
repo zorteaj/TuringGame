@@ -18,8 +18,13 @@ public class ClientSession extends Session {
 
     private String mGroupOwnerAddress;
 
-    public ClientSession(String groupOwnerAddress, SessionMessageHandler handler) {
-        super(handler);
+    public ClientSession(PlayersManager playersManager, String groupOwnerAddress, SessionMessageHandler handler) {
+        super(playersManager, handler);
+        if(mPlayersManager != null) {
+            Log.i(mTag, "Players Manager is NOT null") ;
+        } else {
+            Log.i(mTag, "Players Manager is null");
+        }
         mGroupOwnerAddress = groupOwnerAddress;
     }
 
@@ -103,7 +108,7 @@ public class ClientSession extends Session {
 
     private void listenForAndProcessQuestion() {
         try {
-            Message questionMessage =  (Message) mIn.readObject();
+            Message questionMessage = (Message) mIn.readObject();
             if(questionMessage.getType() == Message.Type.QUESTION) {
                 processQuestion(questionMessage.getBody());
             }
@@ -115,7 +120,20 @@ public class ClientSession extends Session {
     }
 
     private void requestQuestion() {
-        Message questionRequestMessage = new Message(Message.Type.QUESTION_REQUEST, "");
+
+        if(mPlayersManager != null) {
+            Log.i(mTag, "Players Manager is NOT null") ;
+        } else {
+            Log.i(mTag, "Players Manager is null");
+        }
+
+        if(mPlayersManager.getThisPlayer() != null) {
+            Log.i(mTag, "Players Manager.thisPlayer is NOT null") ;
+        } else {
+            Log.i(mTag, "Players Manager.thisPlayer is null");
+        }
+
+        Message questionRequestMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.QUESTION_REQUEST, "");
         sendMessage(questionRequestMessage);
         setState(SessionState.WAITING_FOR_QUESTION);
     }

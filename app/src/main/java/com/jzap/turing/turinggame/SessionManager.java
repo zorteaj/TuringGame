@@ -8,17 +8,19 @@ import android.util.Log;
 /**
  * Created by JZ_W541 on 11/25/2015.
  */
-public class WifiP2pSessionManager implements WifiP2pManager.ConnectionInfoListener {
+public class SessionManager implements WifiP2pManager.ConnectionInfoListener {
 
     private static final String mTag = "WConnectionInfoListener";
 
     private Session mSession;
     private String mGroupOwnerAddress;
     private SessionMessageHandler mHandler;
+    private PlayersManager mPlayersManager;
 
-    public WifiP2pSessionManager(SessionMessageHandler handler) {
+    public SessionManager(SessionMessageHandler handler, PlayersManager playersManager) {
         super();
         mHandler = handler;
+        mPlayersManager = playersManager;
     }
 
     @Override
@@ -31,11 +33,11 @@ public class WifiP2pSessionManager implements WifiP2pManager.ConnectionInfoListe
         // After the group negotiation, we can determine the group owner.
         if (info.groupFormed && info.isGroupOwner) {
             Log.i(mTag, "I'm the group owner");
-            mSession = new GroupOwnerSession(mHandler);
+            mSession = new GroupOwnerSession(mPlayersManager, mHandler);
         } else if (info.groupFormed) {
             // The other device acts as the client.
             Log.i(mTag, "I'm not the group owner");
-            mSession = new ClientSession(mGroupOwnerAddress, mHandler);
+            mSession = new ClientSession(mPlayersManager, mGroupOwnerAddress, mHandler);
         }
 
         if(mSession != null) {

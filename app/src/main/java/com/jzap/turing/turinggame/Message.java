@@ -7,14 +7,20 @@ import java.io.Serializable;
  */
 public class Message implements Serializable { // TODO : Rename to deconflict with android.os.Message
 
+    private String mPlayerId; // Device MAC Address
     private Type mType;
     private String mBody;
 
     public enum Type {QUESTION_REQUEST, QUESTION, ANSWER}
 
-    public Message(Type type, String body) {
+    public Message(Player player, Type type, String body) {
+        mPlayerId = player.getDevice().deviceAddress;
         mType = type;
         mBody = body;
+    }
+
+    public String getId() {
+        return mPlayerId;
     }
 
     public Type getType() {

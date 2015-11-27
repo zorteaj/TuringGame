@@ -22,8 +22,8 @@ public class GroupOwnerSession extends Session {
     private ServerSocket mServerSocket = null;
     private QuestionGenerator mQuestionGenerator = null;
 
-    public GroupOwnerSession(Handler handler) {
-        super(handler); // TODO : Only for test
+    public GroupOwnerSession(PlayersManager playersManager, Handler handler) {
+        super(playersManager, handler); // TODO : Only for test
         mQuestionGenerator = new QuestionGenerator();
     }
 
@@ -125,7 +125,7 @@ public class GroupOwnerSession extends Session {
         mHandler.obtainMessage(MessageTypes.CONTENT_QUESTION, question).sendToTarget();
 
         // Create question Message and publish to peer device(s)
-        Message questionMessage = new Message(Message.Type.QUESTION, question);
+        Message questionMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.QUESTION, question);
         try {
             mOut.writeObject(questionMessage);
         } catch (IOException e) {

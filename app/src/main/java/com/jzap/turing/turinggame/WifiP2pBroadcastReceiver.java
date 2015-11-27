@@ -54,7 +54,8 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
 
             Log.i(mTag, mPeers.size() + " Peers Available");
 
-            mActivity.setPeers(mPeers);
+            //mActivity.setPeers(mPeers);
+            ((MainActivity) mActivity).getPlayersManager().setPeers(mPeers); // TODO : This can't be good design, and is test
         }
     };
 
@@ -77,16 +78,9 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
     // @Override
     public void connect() {
 
-        Log.i(mTag, "Checking to see if I'm already connected..."); // TODO : Get rid of all these logs if no longer useful
-
         if (!mConnected) {
 
-            Log.i(mTag, "I'm NOT already connected...");
-            Log.i(mTag, "Do I have peers?..");
-
             if (mPeers.size() > 0) {
-                Log.i(mTag, "Yes, I have peers - connecting to peer 0");
-
                 WifiP2pDevice device = (WifiP2pDevice) mPeers.get(0);
 
                 WifiP2pConfig config = new WifiP2pConfig();
@@ -94,8 +88,6 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
                 config.wps.setup = WpsInfo.PBC;
 
                 mManager.connect(mChannel, config, new WifiP2pConnectionActionListener(this));
-            } else {
-                Log.i(mTag, "No, I don't have any peers");
             }
             // config.groupOwnerIntent = 15; // TODO : This may be key to multiple connections
         } else {
@@ -150,7 +142,7 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
 
                 // We are connected with the other device, request connection
                 // info to find group owner IP
-                WifiP2pSessionManager sessionManager = new WifiP2pSessionManager(mActivity.getSessionMessageHandler());  // TODO : Only for test
+                SessionManager sessionManager = new SessionManager(mActivity.getSessionMessageHandler(), ((MainActivity) mActivity).getPlayersManager());  // TODO : Only for test -> I don't think it is anymore / Bad design
                 mActivity.setSessionManager(sessionManager); // So that we can kill session from MainActivity (i.e., from onPause)
                 mManager.requestConnectionInfo(mChannel, sessionManager);
             } else {
@@ -158,6 +150,11 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
             }
         } else if(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             Log.i(mTag, "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
+
+            PlayersManager playersManager = ((MainActivity) mActivity).getPlayersManager(); // TODO : This must be bad design (the cast)
+
+            Player thisPlayer = new Player((WifiP2pDevice)intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE), playersManager, true);
+            playersManager.setThisPlayer(thisPlayer);
         }
     }
 }

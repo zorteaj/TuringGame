@@ -2,10 +2,8 @@ package com.jzap.turing.turinggame;
 
 import android.content.Context;
 import android.content.IntentFilter;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,11 +14,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PeerDisplayActivity {
 
@@ -30,17 +24,19 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     private WifiP2pManager.Channel mChannel = null;
     private WifiP2pBroadcastReceiver mReceiver = null;
 
-    private WifiP2pSessionManager mSessionManager = null;
+    private SessionManager mSessionManager = null;
+
+    private PlayersManager mPlayersManager = null; // TODO : Test
 
     private SessionMessageHandler mHandler = null;
     private Session mSession = null;
 
-    private List mPeers = new ArrayList();
-
-    private LinearLayout mPeers_LinearLayout;
+    private LinearLayout mPlayers_LinearLayout;
     private TextView mQuestion_TextView;
     private Button mSubmitAnswer_Button;
     private EditText mAnswer_EditText;
+
+    private boolean init = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +84,9 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     public void onResume() {
         Log.i(mTag, "On Resume");
         super.onResume();
+        if(!init) {
+            init();  //TODO : This may simply be a workaround to a bug wherein the activity can be running, when init wasn't called (or at least, broadcast receiver wasn't registered) - or this may be the legit fix...
+        }
     }
 
     @Override
@@ -98,14 +97,23 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     }
 
     private void init() {
-        mHandler = new SessionMessageHandler(this);
-        initializeUiViews();
-        initializeWifiP2pNetwork();
+        if(!init) {
+            mHandler = new SessionMessageHandler(this);
+            initializeUiViews();
+            initializeWifiP2pNetwork();
+            mPlayersManager = new PlayersManager(this); // TODO : Test
+        }
+        init = true;
     }
 
     public void cleanUp() {
+        init = false;
         if(mReceiver != null) {
-            unregisterReceiver(mReceiver);
+            try {
+                unregisterReceiver(mReceiver); // TODO : Figure how I'm sometimes getting into a state where this is not registered here!!
+            } catch(IllegalArgumentException e) {
+                e.printStackTrace();
+            }
             mReceiver.disconnect();
         }
         if(mSessionManager != null) {
@@ -114,7 +122,16 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     }
 
     private void initializeUiViews() {
-        mPeers_LinearLayout = (LinearLayout) findViewById(R.id.peers_LinearLayout);
+        mPlayers_LinearLayout = (LinearLayout) findViewById(R.id.peers_LinearLayout);
+
+        Log.i(mTag, "just initialized Players Linear Layout...");
+        if (mPlayers_LinearLayout != null) {
+            Log.i(mTag, "...it's NOT null");
+        } else {
+            Log.i(mTag, "...it is null");
+        }
+
+
         mQuestion_TextView = (TextView) findViewById(R.id.question_TextView);
 
         mSubmitAnswer_Button = (Button) findViewById(R.id.submitAnswer_Button);
@@ -150,6 +167,10 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     public void discoverPeersClicked(View v) {
         Log.i(mTag, "Discover Peers Button Clicked");
+
+        if(!init) {
+            init(); // TODO : This may simply be a workaround to a bug wherein the activity can be running, when init wasn't called (or at least, broadcast receiver wasn't registered)
+        }
 
         if(mManager != null) {
             mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
@@ -194,23 +215,7 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     }
 
     @Override
-    public void setPeers(List peers) {
-
-        // TODO : If user clicks set peers in the middle of the game, it will update the list and blank out answers.  Should probably disable this manually and automatically (in case
-        // a new person tries to join - might mess things ups
-
-        mPeers_LinearLayout.removeAllViews();
-
-        for(int i = 0; i < peers.size(); i++) {
-            WifiP2pDevice device = (WifiP2pDevice) peers.get(i);
-            PeerView peer = new PeerView(this, device);
-            peer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-            mPeers_LinearLayout.addView(peer);
-        }
-    }
-
-    @Override
-    public void setSessionManager(WifiP2pSessionManager sessionManager) {
+    public void setSessionManager(SessionManager sessionManager) {
         mSessionManager = sessionManager;
     }
 
@@ -232,13 +237,21 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     @Override
     public void setAnswer(String answer) {
 
-        for(int i = 0; i < mPeers_LinearLayout.getChildCount(); i++) {
-            if(mPeers_LinearLayout.getChildAt(i) instanceof PeerView) {
-                //if(((PeerView) mPeers_LinearLayout.getChildAt(i)).getDevice().deviceAddress == "Placeholder") { // TODO : Get device address
-                    ((PeerView) mPeers_LinearLayout.getChildAt(i)).setAnswer(answer);
+        for(int i = 0; i < mPlayers_LinearLayout.getChildCount(); i++) {
+            if(mPlayers_LinearLayout.getChildAt(i) instanceof PlayerView) {
+                //if(((PeerView) mPlayers_LinearLayout.getChildAt(i)).getDevice().deviceAddress == "Placeholder") { // TODO : Get device address
+                    ((PlayerView) mPlayers_LinearLayout.getChildAt(i)).setAnswer(answer);
                // }
             }
         }
+    }
+
+    public PlayersManager getPlayersManager() {
+        return mPlayersManager;
+    }
+
+    public LinearLayout getPlayersLinearLayout() {
+        return mPlayers_LinearLayout;
     }
 
 }
