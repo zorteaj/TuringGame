@@ -11,5 +11,7 @@ public class MessageTypes {
     //Control
     public static final int CONTROL_ENABLE_ANSWER_BUTTON = 3;
     public static final int CONTROL_DISABLE_ANSWER_BUTTON = 4;
-    public static final int CONTROL_ADD_PLAYER = 5;
+    public static final int CONTROL_ENABLE_VOTING = 5;
+    public static final int CONTROL_DISABLE_VOTING = 6;
+    public static final int CONTROL_ADD_PLAYER = 7;
 }

@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.jzap.turing.turinggame.Message.Message;
+import com.jzap.turing.turinggame.Message.MessageTypes;
 import com.jzap.turing.turinggame.Player.Player;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 import com.jzap.turing.turinggame.Player.AiPlayer;
@@ -23,7 +24,7 @@ abstract public class Session implements Runnable {
 
     protected static final int mPort = 8886; // TODO : Is this number okay?
 
-    protected enum SessionState {COLD, WAITING_FOR_QUESTION, ANSWERING, SENDING_ANSWER, ANSWERED, TERMINATE} // TODO : Keep an eye on whether these get used
+    protected enum SessionState {COLD, WAITING_FOR_QUESTION, ANSWERING, SENDING_ANSWER, ANSWERED, VOTING, WAITING_FOR_VOTES, TERMINATE} // TODO : Keep an eye on whether these get used
     protected SessionState mSessionState;
 
     protected PlayersManager mPlayersManager;
@@ -34,6 +35,9 @@ abstract public class Session implements Runnable {
     protected Socket mSocket = null;
     protected ObjectInputStream mIn = null;
     protected ObjectOutputStream mOut = null;
+
+    protected boolean mAnsweringEnabled = false;
+    protected boolean mVotingEnabled = false;
 
     protected String mAnswer = null;
 
@@ -73,9 +77,14 @@ abstract public class Session implements Runnable {
             Log.i(mTag, "IO exception");
             e.printStackTrace();
         }
+        setState(SessionState.VOTING);
     }
 
-    abstract protected void castVote();
+    public void castVote(String playerId) {
+        Log.i(mTag, "Voted for " + playerId); // TODO : Actually send this
+        enableVoting(false);
+        setState(SessionState.WAITING_FOR_VOTES);
+    }
 
     protected void sendMessage(Message message) {
         try {
@@ -87,7 +96,7 @@ abstract public class Session implements Runnable {
         }
     }
 
-    protected void sendMessages(List<Message> messages) { // TODO : Test
+    protected void sendMessages(List<Message> messages) {
         try {
             if(mOut != null) {
                 mOut.writeObject(messages);
@@ -96,7 +105,6 @@ abstract public class Session implements Runnable {
             e.printStackTrace();
         }
     }
-
 
     protected void end() {
         try {
@@ -110,6 +118,26 @@ abstract public class Session implements Runnable {
 
     protected void setState(SessionState sessionState) {
         mSessionState = sessionState;
+    }
+
+    protected void enableAnswering(boolean enable) {
+        if(enable) {
+            mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
+            mAnsweringEnabled = true;
+        } else {
+            mHandler.obtainMessage(MessageTypes.CONTROL_DISABLE_ANSWER_BUTTON).sendToTarget();
+            mAnsweringEnabled = false;
+        }
+    }
+
+    protected void enableVoting(boolean enable) {
+        if(enable) {
+            mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_VOTING).sendToTarget();
+            mVotingEnabled = true;
+        } else {
+            mHandler.obtainMessage(MessageTypes.CONTROL_DISABLE_VOTING).sendToTarget();
+            mVotingEnabled = false;
+        }
     }
 
 }

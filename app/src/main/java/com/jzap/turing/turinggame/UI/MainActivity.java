@@ -232,6 +232,10 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
         mSession = session;
     }
 
+    public Session getSession() {
+        return mSession;
+    }
+
     public PlayersManager getPlayersManager() {
         return mPlayersManager;
     }

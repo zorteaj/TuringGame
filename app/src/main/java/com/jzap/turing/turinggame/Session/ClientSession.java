@@ -36,30 +36,35 @@ public class ClientSession extends Session {
 
         init();
 
-        boolean once = true;
-
         // Synchronously designed protocol
         while (mSessionState != SessionState.TERMINATE) {  //  Todo: Make sure all blocking requests timeout so this condition is hit on termination, instead of app hanging
+            switch(mSessionState) {
+                case COLD:
+                    requestQuestion();
+                    break;
+                case WAITING_FOR_QUESTION:
+                    listenForAndProcessQuestion();
+                    break;
+                case ANSWERING:
+                    if(!mAnsweringEnabled) {
+                        enableAnswering(true);
+                    }
+                    break;
+                case SENDING_ANSWER:
+                    enableAnswering(false);
+                    answerQuestion();
+                    break;
+                case ANSWERED:
+                    listenForAndProcessAnswers();
+                    break;
+                case VOTING:
+                    if(!mVotingEnabled) {
+                        enableVoting(true);
+                    }
+                    break;
+                case WAITING_FOR_VOTES:
 
-            if (mSessionState == SessionState.COLD) {
-                //Log.i(mTag, "Session state = COLD");
-                requestQuestion();
-            } else if (mSessionState == SessionState.WAITING_FOR_QUESTION) {
-                //Log.i(mTag, "Session state = WAITING FOR QUESTION");
-                listenForAndProcessQuestion();
-            } else if (mSessionState == SessionState.ANSWERING) {
-                //Log.i(mTag, "Session state = ANSWERING");
-                if(once) {
-                    mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
-                    once = false; // TODO : This is a test and in general is quite bad.  For one, button should be disabled afterwards again, adn this once thing is bad design and would need to be reset anyway
-                }
-            } else if (mSessionState == SessionState.SENDING_ANSWER) {
-                //Log.i(mTag, "Session state = SENDING_ANSWER");
-                answerQuestion();
-            } else if (mSessionState == SessionState.ANSWERED) {
-                //Log.i(mTag, "Session state = ANSWERED");
-                listenForAndProcessAnswers();
-                setState(SessionState.COLD); // TODO : Just a test
+                    break;
             }
         }
 
@@ -94,11 +99,6 @@ public class ClientSession extends Session {
         Log.i(mTag, "Sending answer: " + mAnswer);
         sendMessages(answerMessages);
         setState(SessionState.ANSWERED);
-    }
-
-    @Override
-    protected void castVote() {
-
     }
 
     private void processQuestion(String question) {

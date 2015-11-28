@@ -4,6 +4,7 @@ package com.jzap.turing.turinggame.Session;
 import android.os.Handler;
 
 import com.jzap.turing.turinggame.Message.MessageTypes;
+import com.jzap.turing.turinggame.UI.MainActivity;
 import com.jzap.turing.turinggame.UI.PeerDisplayActivity;
 
 /**
@@ -32,6 +33,11 @@ public class SessionMessageHandler extends Handler {
             case MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON : mActivity.getSubmitAnswerButton().setClickable(true);
                 break;
             case MessageTypes.CONTROL_DISABLE_ANSWER_BUTTON: mActivity.getSubmitAnswerButton().setClickable(false);
+                break;
+            case MessageTypes.CONTROL_ENABLE_VOTING: ((MainActivity) mActivity).getPlayersManager().enableVoting(true); // TODO : Bad design (cast)
+                break;
+            case MessageTypes.CONTROL_DISABLE_VOTING: ((MainActivity) mActivity).getPlayersManager().enableVoting(false);
+                break;
         }
     }
 }

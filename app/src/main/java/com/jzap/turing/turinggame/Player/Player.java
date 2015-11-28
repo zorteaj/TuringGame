@@ -13,7 +13,7 @@ import com.jzap.turing.turinggame.Message.MessageTypes;
  */
 
 // Player represents a question answerer and, except for AI, a voter
-// New players automatically register themselves (add themselves to) with the PlayersManager
+// New players automatically register themselves with  (add themselves to) the PlayersManager
 public class Player implements Serializable {
 
     protected PlayersManager mPlayersManager;
