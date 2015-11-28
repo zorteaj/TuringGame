@@ -24,8 +24,6 @@ public class SessionMessageHandler extends Handler {
         switch(message.what) {
             case MessageTypes.CONTENT_QUESTION : mActivity.setQuestion((String) message.obj);
                 break;
-            case MessageTypes.CONTENT_ANSWER : mActivity.setAnswer((String) message.obj); // TODO : Support multiple answers!! This is a test for now...
-                break;
             case MessageTypes.CONTENT_SESSION : mActivity.setSession((Session) message.obj);
                 break;
             case MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON : mActivity.getSubmitAnswerButton().setClickable(true);

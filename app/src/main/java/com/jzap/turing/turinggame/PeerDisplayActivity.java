@@ -12,5 +12,4 @@ public interface PeerDisplayActivity {
     SessionMessageHandler getSessionMessageHandler();
     Button getSubmitAnswerButton(); // TODO : Ideally this interface would have the button, I think
     void setSession(Session session); // TODO : Same as above
-    void setAnswer(String answer); // TODO : Same
 }

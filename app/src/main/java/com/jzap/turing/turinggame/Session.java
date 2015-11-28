@@ -1,6 +1,7 @@
 package com.jzap.turing.turinggame;
 
 import android.os.Handler;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,6 +12,8 @@ import java.net.Socket;
  * Created by JZ_W541 on 11/25/2015.
  */
 abstract public class Session implements Runnable {
+
+    private static final String mTag = "Session";
 
     protected static final int mPort = 8886; // TODO : Is this number okay?
 
@@ -36,6 +39,7 @@ abstract public class Session implements Runnable {
 
     protected void answerQuestion() {
         Message answerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer);
+        Log.i(mTag, "Sending answer: " + mAnswer);
         sendMessage(answerMessage);
         setState(SessionState.ANSWERED);
     }
@@ -46,28 +50,37 @@ abstract public class Session implements Runnable {
     }
 
     protected void listenForAndProcessAnswers() { // TODO : Make this a list of answers for multiple peers case
+        Log.i(mTag, "Listening for and processing answers");
         try {
-            Message answersMessage =  (Message) mIn.readObject();
+            Message answersMessage = (Message) mIn.readObject();
+            Log.i(mTag, "Answer = " + answersMessage.getBody());
             if(answersMessage.getType() == Message.Type.ANSWER) {
+                Log.i(mTag, "Answer = " + answersMessage.getBody());
                 mPlayersManager.processAnswer(answersMessage);
                 //processAnswers(answersMessage.getBody()); // TODO : Handle else
+            } else {
+                Log.i(mTag, "Not answer type");
             }
         } catch (ClassNotFoundException e) {
+            Log.i(mTag, "Class exception");
             e.printStackTrace();
         } catch (IOException e) {
+            Log.i(mTag, "IO exception");
             e.printStackTrace();
         }
     }
 
-   // protected void processAnswers(String answer) {
-        //mPlayersManager.
-       // mHandler.obtainMessage(MessageTypes.CONTENT_ANSWER, answer).sendToTarget();
-       // setState(SessionState.ANSWERING); // TODO ????
-   // }
-
     abstract protected void castVote();
 
-    abstract protected void sendMessage(Message message);
+    protected void sendMessage(Message message) {
+        try {
+            if(mOut != null) {
+                mOut.writeObject(message);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     protected void end() {
         try {

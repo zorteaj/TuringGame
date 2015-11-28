@@ -34,34 +34,26 @@ public class GroupOwnerSession extends Session {
 
         init();
 
-        while(mSessionState != SessionState.TERMINATE) {
+        boolean once = true;
 
-            Message message = null;
+        while (mSessionState != SessionState.TERMINATE) {
 
-            try {
-                if(mSocket.isConnected()) { // TODO : Not so sure about this check
-
-                    message = (Message) mIn.readObject();
-                    Message.Type messageType = message.getType();
-
-                    mHandler.obtainMessage(MessageTypes.CONTENT_QUESTION, message.getBody()).sendToTarget(); // TODO : Just for testing
-
-                    switch(messageType) {
-                        case QUESTION_REQUEST :
-                                Log.i(mTag, "CONTENT_QUESTION REQUEST RECEIVED");
-                                processQuestionRequest();
-                            break;
-                        case ANSWER : ;
-                            break;
-                    } // TODO : Add all types
-
-
-                    listenForAndProcessAnswers(); // TODO : Clean all this up, trying to force a test!
+            if (mSessionState == SessionState.COLD) {
+                Log.i(mTag, "Session state = COLD");
+                listenForAndProcessQuestionRequest();
+            } else if (mSessionState == SessionState.ANSWERING) {
+                Log.i(mTag, "Session state = ANSWERING");
+                if (once) {
+                    mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
+                    once = false; // TODO : This is a test and in general is quite bad.  For one, button should be disabled afterwards again, adn this once thing is bad design and would need to be reset anyway
                 }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else if (mSessionState == SessionState.SENDING_ANSWER) {
+                Log.i(mTag, "Session state = SENDING_ANSWER");
+                answerQuestion();
+            } else if (mSessionState == SessionState.ANSWERED) {
+                Log.i(mTag, "Session state = ANSWERED");
+                listenForAndProcessAnswers();
+                setState(SessionState.COLD); // TODO : Just a test
             }
         }
 
@@ -85,7 +77,7 @@ public class GroupOwnerSession extends Session {
     protected void end() {
         super.end();
         try {
-            if(mServerSocket != null) {
+            if (mServerSocket != null) {
                 mServerSocket.close();
             }
         } catch (IOException e) {
@@ -106,14 +98,26 @@ public class GroupOwnerSession extends Session {
 
     }
 
-    @Override
-    protected void sendMessage(Message message) {
+    private void listenForAndProcessQuestionRequest() {
+        Message questionMessage = null;
 
+        if (mIn != null) {
+            try {
+                questionMessage = (Message) mIn.readObject();
+                if (questionMessage.getType() == Message.Type.QUESTION_REQUEST) {
+                    processQuestionRequest();
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void processQuestionRequest() {
         Log.i(mTag, "Processing Question Request");
-        if(mQuestionGenerator == null) {
+        if (mQuestionGenerator == null) {
             return;
         }
         String question = mQuestionGenerator.fetchQuestion();
@@ -126,10 +130,8 @@ public class GroupOwnerSession extends Session {
 
         // Create question Message and publish to peer device(s)
         Message questionMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.QUESTION, question);
-        try {
-            mOut.writeObject(questionMessage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sendMessage(questionMessage);
+
+        setState(SessionState.ANSWERING);
     }
 }

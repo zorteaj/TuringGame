@@ -123,15 +123,6 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     private void initializeUiViews() {
         mPlayers_LinearLayout = (LinearLayout) findViewById(R.id.peers_LinearLayout);
-
-        Log.i(mTag, "just initialized Players Linear Layout...");
-        if (mPlayers_LinearLayout != null) {
-            Log.i(mTag, "...it's NOT null");
-        } else {
-            Log.i(mTag, "...it is null");
-        }
-
-
         mQuestion_TextView = (TextView) findViewById(R.id.question_TextView);
 
         mSubmitAnswer_Button = (Button) findViewById(R.id.submitAnswer_Button);
@@ -232,18 +223,6 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     @Override
     public void setSession(Session session) {
         mSession = session;
-    }
-
-    @Override
-    public void setAnswer(String answer) {
-
-        for(int i = 0; i < mPlayers_LinearLayout.getChildCount(); i++) {
-            if(mPlayers_LinearLayout.getChildAt(i) instanceof PlayerView) {
-                //if(((PeerView) mPlayers_LinearLayout.getChildAt(i)).getDevice().deviceAddress == "Placeholder") { // TODO : Get device address
-                    ((PlayerView) mPlayers_LinearLayout.getChildAt(i)).setAnswer(answer);
-               // }
-            }
-        }
     }
 
     public PlayersManager getPlayersManager() {

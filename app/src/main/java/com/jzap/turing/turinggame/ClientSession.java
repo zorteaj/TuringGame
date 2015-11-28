@@ -20,11 +20,6 @@ public class ClientSession extends Session {
 
     public ClientSession(PlayersManager playersManager, String groupOwnerAddress, SessionMessageHandler handler) {
         super(playersManager, handler);
-        if(mPlayersManager != null) {
-            Log.i(mTag, "Players Manager is NOT null") ;
-        } else {
-            Log.i(mTag, "Players Manager is null");
-        }
         mGroupOwnerAddress = groupOwnerAddress;
     }
 
@@ -41,19 +36,24 @@ public class ClientSession extends Session {
         while (mSessionState != SessionState.TERMINATE) {  //  Todo: Make sure all blocking requests timeout so this condition is hit on termination, instead of app hanging
 
             if (mSessionState == SessionState.COLD) {
+                Log.i(mTag, "Session state = COLD");
                 requestQuestion();
             } else if (mSessionState == SessionState.WAITING_FOR_QUESTION) {
+                Log.i(mTag, "Session state = WAITING FOR QUESTION");
                 listenForAndProcessQuestion();
             } else if (mSessionState == SessionState.ANSWERING) {
+                Log.i(mTag, "Session state = ANSWERING");
                 if(once) {
                     mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
                     once = false; // TODO : This is a test and in general is quite bad.  For one, button should be disabled afterwards again, adn this once thing is bad design and would need to be reset anyway
                 }
             } else if (mSessionState == SessionState.SENDING_ANSWER) {
+                Log.i(mTag, "Session state = SENDING_ANSWER");
                 answerQuestion();
             } else if (mSessionState == SessionState.ANSWERED) {
+                Log.i(mTag, "Session state = ANSWERED");
                 listenForAndProcessAnswers();
-                setState(SessionState.TERMINATE); // TODO : Just a test
+                setState(SessionState.COLD); // TODO : Just a test
             }
         }
 
@@ -90,17 +90,6 @@ public class ClientSession extends Session {
 
     }
 
-    @Override
-    protected void sendMessage(Message message) {
-        try {
-            if(mOut != null) {
-                mOut.writeObject(message);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void processQuestion(String question) {
         mHandler.obtainMessage(MessageTypes.CONTENT_QUESTION, question).sendToTarget();
         setState(SessionState.ANSWERING);
@@ -120,19 +109,6 @@ public class ClientSession extends Session {
     }
 
     private void requestQuestion() {
-
-        if(mPlayersManager != null) {
-            Log.i(mTag, "Players Manager is NOT null") ;
-        } else {
-            Log.i(mTag, "Players Manager is null");
-        }
-
-        if(mPlayersManager.getThisPlayer() != null) {
-            Log.i(mTag, "Players Manager.thisPlayer is NOT null") ;
-        } else {
-            Log.i(mTag, "Players Manager.thisPlayer is null");
-        }
-
         Message questionRequestMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.QUESTION_REQUEST, "");
         sendMessage(questionRequestMessage);
         setState(SessionState.WAITING_FOR_QUESTION);

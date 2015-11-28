@@ -58,7 +58,6 @@ public class PlayersManager {
     }
 
     public void setThisPlayer(Player player) {
-        Log.i(mTag, "This Player has been set");
         mThisPlayer = player;
     }
 
@@ -69,9 +68,6 @@ public class PlayersManager {
     Player findPlayerById(String id) {
         Player player = null;
         for(int i = 0; i < mPlayers.size(); i++) {
-
-            Log.i(mTag, "in id = " + id + ", mPlayer(" + id + ") = " + mPlayers.get(i).getId());
-
             if(id.equals(mPlayers.get(i).getId())) {
                 player = mPlayers.get(i);
             }
