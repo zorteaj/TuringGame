@@ -7,7 +7,24 @@ import android.net.wifi.p2p.WifiP2pDevice;
  */
 public class AiPlayer extends Player {
 
-    AiPlayer(WifiP2pDevice device, PlayersManager playersManager) {
-        super(device, playersManager, false);
+    private Message mAnswerMessage;
+
+    AiPlayer(PlayersManager playersManager) {
+        super("AI", playersManager);
     }
+
+    public Message answerQuestion() {
+        mAnswerMessage = new Message(this, Message.Type.ANSWER, calculateAnswer());
+        return mAnswerMessage;
+    }
+
+    private String calculateAnswer() {
+        String answer = "AI Smart Answer!";
+        return answer;
+    }
+
+    public void postAnswerLocally() {
+        mPlayersManager.processAnswer(mAnswerMessage);
+    }
+
 }

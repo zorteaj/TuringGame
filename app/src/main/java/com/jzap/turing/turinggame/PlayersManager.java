@@ -19,12 +19,12 @@ public class PlayersManager {
     // This device's player
     private Player mThisPlayer = null;
     private AppCompatActivity mActivity;
-    private List<Player> mPlayers;
+    private List<Player> mPlayersList;
     private LinearLayout mPlayers_LinearLayout;
 
     public PlayersManager(AppCompatActivity activity) {
         mActivity = activity;
-        mPlayers = new ArrayList();
+        mPlayersList = new ArrayList();
         mPlayers_LinearLayout = ((MainActivity) mActivity).getPlayersLinearLayout(); // TODO : This can't be good design
     }
 
@@ -32,9 +32,9 @@ public class PlayersManager {
     // a new person tries to join - might mess things ups
     public void setPeers(List peers) {
         mPlayers_LinearLayout.removeAllViews();
-        mPlayers.clear();
+        mPlayersList.clear();
         for(int i = 0; i < peers.size(); i++) {
-            mPlayers.add(new Player((WifiP2pDevice) peers.get(i), this));
+            new Player((WifiP2pDevice) peers.get(i), this);
         }
     }
 
@@ -47,20 +47,13 @@ public class PlayersManager {
     }
 
     public void processAnswer(Message message) {
-        Log.i(mTag, "Answer = "  + message.getBody());
+        Log.i(mTag, "Answer = " + message.getBody());
         Player player = null;
-        if((player = findPlayerById(message.getPlayerId())) != null) {
+        if ((player = findPlayerById(message.getPlayerId())) != null) {
             player.setAnswer(message.getBody());
         } else {
-            Log.i(mTag, "Trying to process answer, but player does not exist");
-            Log.i(mTag, "ID = " + message.getPlayerId());
-            if(message.getPlayerId().equals("AI")) {
-                mPlayers.add(new Player("AI", message.getBody(), this));
-                Log.i(mTag, "Adding AI");
-            } else {
-                // TODO : Add player??
-                Log.i(mTag, "Add failed");
-            }
+            // TODO : Add player??
+            Log.i(mTag, "Add failed");
         }
     }
 
@@ -74,11 +67,15 @@ public class PlayersManager {
 
     Player findPlayerById(String id) {
         Player player = null;
-        for(int i = 0; i < mPlayers.size(); i++) {
-            if (id.equals(mPlayers.get(i).getId())) {
-                player = mPlayers.get(i);
+        for(int i = 0; i < mPlayersList.size(); i++) {
+            if (id.equals(mPlayersList.get(i).getId())) {
+                player = mPlayersList.get(i);
             }
         }
         return player;
+    }
+
+    List<Player> getPlayersList() {
+        return mPlayersList;
     }
 }

@@ -22,6 +22,7 @@ public class GroupOwnerSession extends Session {
     private static final String mTag = "GroupOwnerSession";
 
     private ServerSocket mServerSocket = null;
+
     private QuestionGenerator mQuestionGenerator = null;
 
     public GroupOwnerSession(PlayersManager playersManager, Handler handler) {
@@ -91,11 +92,14 @@ public class GroupOwnerSession extends Session {
     protected void answerQuestion() {
 
         // TODO AI
+        if(mAiPlayer == null) {
+            return;
+        }
 
         List<Message> answerMessages = new ArrayList<>();
 
         Message playerAnswerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer);
-        Message aiAnswerMessage = new Message("AI", Message.Type.ANSWER, "AIs answer"); // TODO : Just a test
+        Message aiAnswerMessage = mAiPlayer.answerQuestion();
 
         answerMessages.add(playerAnswerMessage);
         answerMessages.add(aiAnswerMessage);
@@ -104,6 +108,14 @@ public class GroupOwnerSession extends Session {
         sendMessages(answerMessages);
         setState(SessionState.ANSWERED);
 
+    }
+
+    @Override
+    protected void listenForAndProcessAnswers() {
+        super.listenForAndProcessAnswers();
+        if(mAiPlayer != null) {
+            mAiPlayer.postAnswerLocally();
+        }
     }
 
     @Override

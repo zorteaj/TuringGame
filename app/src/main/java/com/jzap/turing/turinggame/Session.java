@@ -24,6 +24,8 @@ abstract public class Session implements Runnable {
     protected PlayersManager mPlayersManager;
     protected Handler mHandler;
 
+    protected AiPlayer mAiPlayer = null;
+
     protected Socket mSocket = null;
     protected ObjectInputStream mIn = null;
     protected ObjectOutputStream mOut = null;
@@ -33,6 +35,7 @@ abstract public class Session implements Runnable {
     protected Session(PlayersManager manager, Handler handler) {
         mPlayersManager = manager;
         mHandler = handler;
+        mAiPlayer = new AiPlayer(mPlayersManager);
         mSessionState = SessionState.COLD; // TODO : Use this?
     }
 
@@ -44,27 +47,6 @@ abstract public class Session implements Runnable {
         mAnswer = answer;
         setState(SessionState.SENDING_ANSWER);
     }
-
-/*    protected void listenForAndProcessAnswers() { // TODO : Make this a list of answers for multiple peers case
-        Log.i(mTag, "Listening for and processing answers");
-        try {
-            Message answersMessage = (Message) mIn.readObject();
-            Log.i(mTag, "Answer = " + answersMessage.getBody());
-            if(answersMessage.getType() == Message.Type.ANSWER) {
-                Log.i(mTag, "Answer = " + answersMessage.getBody());
-                mPlayersManager.processAnswer(answersMessage);
-                //processAnswers(answersMessage.getBody()); // TODO : Handle else
-            } else {
-                Log.i(mTag, "Not answer type");
-            }
-        } catch (ClassNotFoundException e) {
-            Log.i(mTag, "Class exception");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.i(mTag, "IO exception");
-            e.printStackTrace();
-        }
-    }*/
 
     protected void listenForAndProcessAnswers() { // TODO : Make this a list of answers for multiple peers case // TODO : TEST
         Log.i(mTag, "Listening for and processing answers");

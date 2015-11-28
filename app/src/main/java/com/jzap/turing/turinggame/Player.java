@@ -9,9 +9,12 @@ import android.os.Looper;
 /**
  * Created by JZ_W541 on 11/27/2015.
  */
+
+// Player represents a question answerer and, except for AI, a voter
+// New players automatically register themselves (add themselves to) with the PlayersManager
 public class Player implements Serializable {
 
-    private PlayersManager mPlayersManager;
+    protected PlayersManager mPlayersManager;
     private PlayerView mPlayerView;
     private String mId;
 
@@ -25,12 +28,12 @@ public class Player implements Serializable {
         this(device, playersManager, false);
     }
 
-    Player(String id, PlayersManager playersManager) {
-        this(id, null, playersManager, false);
-    }
-
     Player(String id, String answer, PlayersManager playersManager) {
         this(id, answer, playersManager, false);
+    }
+
+    Player(String id, PlayersManager playersManager) {
+        this(id, null, playersManager, false);
     }
 
     Player(String id, String answer, PlayersManager playersManager, boolean thisPlayer) {
@@ -60,6 +63,7 @@ public class Player implements Serializable {
                 mPlayer.getPlayerView().setAnswer((String) message.obj);
             } else if(message.what == MessageTypes.CONTROL_ADD_PLAYER) {
                 mPlayerView = new PlayerView(mPlayersManager.getActivity(), mId);
+                mPlayersManager.getPlayersList().add(mPlayer);
                 mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);
             }
         }
@@ -69,12 +73,8 @@ public class Player implements Serializable {
         mPlayerHandler.obtainMessage(MessageTypes.CONTROL_ADD_PLAYER).sendToTarget();
 
         /*mPlayerView = new PlayerView(mPlayersManager.getActivity(), mId);
-        mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);*/
+        mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);*/ // TODO : Does this have something to do with the flickering on begin game/incoming question?
     }
-
-  /*  //public WifiP2pDevice getDevice() {
-        return mDevice;
-    }*/
 
     public String getId() {
         return mId;
@@ -84,16 +84,8 @@ public class Player implements Serializable {
         mPlayerHandler.obtainMessage(MessageTypes.CONTENT_ANSWER, answer).sendToTarget();
     }
 
-   /* public void setPlayerView(PlayerView playerView) {
-        mPlayerView = playerView;
-    }*/
-
     public PlayerView getPlayerView() {
         return mPlayerView;
     }
-
-/*    public PlayersManager getPlayersManager() {
-        return mPlayersManager;
-    }*/
 
 }
