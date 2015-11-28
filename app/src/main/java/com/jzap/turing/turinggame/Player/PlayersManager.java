@@ -1,10 +1,13 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Player;
 
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
 import android.widget.LinearLayout;
+
+import com.jzap.turing.turinggame.UI.MainActivity;
+import com.jzap.turing.turinggame.Message.Message;
 
 import java.util.ArrayList;
 import java.util.List;

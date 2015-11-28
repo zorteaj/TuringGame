@@ -1,7 +1,12 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Session;
 
 import android.os.Handler;
 import android.util.Log;
+
+import com.jzap.turing.turinggame.Message.Message;
+import com.jzap.turing.turinggame.Player.Player;
+import com.jzap.turing.turinggame.Player.PlayersManager;
+import com.jzap.turing.turinggame.Player.AiPlayer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

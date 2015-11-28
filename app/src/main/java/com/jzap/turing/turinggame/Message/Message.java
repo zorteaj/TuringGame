@@ -1,4 +1,6 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Message;
+
+import com.jzap.turing.turinggame.Player.Player;
 
 import java.io.Serializable;
 

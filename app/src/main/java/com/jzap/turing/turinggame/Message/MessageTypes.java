@@ -1,4 +1,4 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Message;
 
 /**
  * Created by JZ_W541 on 11/25/2015.

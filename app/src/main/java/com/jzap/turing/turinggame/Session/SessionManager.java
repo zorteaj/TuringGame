@@ -1,8 +1,11 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Session;
 
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
+
+import com.jzap.turing.turinggame.Message.MessageTypes;
+import com.jzap.turing.turinggame.Player.PlayersManager;
 
 
 /**

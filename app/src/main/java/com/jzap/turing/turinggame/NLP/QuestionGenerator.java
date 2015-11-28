@@ -16,7 +16,7 @@ public class QuestionGenerator {
 
     // Hard-coded set of questions. Alternative to
     // bootstrapping may be configuration via automatic load
-    // from a database or a simply UI input
+    // from a database or simply a UI input
     private void bootstrap() {
         mQuestions = new ArrayList<>();
         mQuestions.add("Why is the sky blue?");

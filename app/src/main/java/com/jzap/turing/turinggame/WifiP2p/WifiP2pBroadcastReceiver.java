@@ -1,4 +1,4 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.WifiP2p;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +10,12 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
+
+import com.jzap.turing.turinggame.UI.MainActivity;
+import com.jzap.turing.turinggame.UI.PeerDisplayActivity;
+import com.jzap.turing.turinggame.Player.Player;
+import com.jzap.turing.turinggame.Player.PlayersManager;
+import com.jzap.turing.turinggame.Session.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;

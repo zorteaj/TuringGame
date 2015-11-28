@@ -1,6 +1,6 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Player;
 
-import android.net.wifi.p2p.WifiP2pDevice;
+import com.jzap.turing.turinggame.Message.Message;
 
 /**
  * Created by JZ_W541 on 11/28/2015.
@@ -9,7 +9,7 @@ public class AiPlayer extends Player {
 
     private Message mAnswerMessage;
 
-    AiPlayer(PlayersManager playersManager) {
+    public AiPlayer(PlayersManager playersManager) {
         super("AI", playersManager);
     }
 

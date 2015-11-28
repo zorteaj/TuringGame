@@ -1,4 +1,4 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Player;
 
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;

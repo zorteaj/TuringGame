@@ -1,6 +1,10 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Session;
 
 import android.util.Log;
+
+import com.jzap.turing.turinggame.Message.Message;
+import com.jzap.turing.turinggame.Message.MessageTypes;
+import com.jzap.turing.turinggame.Player.PlayersManager;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

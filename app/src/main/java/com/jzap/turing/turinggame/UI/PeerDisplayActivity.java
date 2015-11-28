@@ -1,6 +1,10 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.UI;
 
 import android.widget.Button;
+
+import com.jzap.turing.turinggame.Session.Session;
+import com.jzap.turing.turinggame.Session.SessionManager;
+import com.jzap.turing.turinggame.Session.SessionMessageHandler;
 
 /**
  * Created by JZ_W541 on 11/25/2015.

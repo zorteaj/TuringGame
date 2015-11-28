@@ -1,10 +1,12 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Player;
 
 import android.net.wifi.p2p.WifiP2pDevice;
 
 import java.io.Serializable;
 import android.os.Handler;
 import android.os.Looper;
+
+import com.jzap.turing.turinggame.Message.MessageTypes;
 
 /**
  * Created by JZ_W541 on 11/27/2015.
@@ -20,23 +22,23 @@ public class Player implements Serializable {
 
     private PlayerHandler mPlayerHandler;
 
-    Player(WifiP2pDevice device, PlayersManager playersManager, boolean thisPlayer) {
+    public Player(WifiP2pDevice device, PlayersManager playersManager, boolean thisPlayer) {
         this(device.deviceAddress, null, playersManager, thisPlayer);
     }
 
-    Player(WifiP2pDevice device, PlayersManager playersManager) {
+    public Player(WifiP2pDevice device, PlayersManager playersManager) {
         this(device, playersManager, false);
     }
 
-    Player(String id, String answer, PlayersManager playersManager) {
+    public Player(String id, String answer, PlayersManager playersManager) {
         this(id, answer, playersManager, false);
     }
 
-    Player(String id, PlayersManager playersManager) {
+    public Player(String id, PlayersManager playersManager) {
         this(id, null, playersManager, false);
     }
 
-    Player(String id, String answer, PlayersManager playersManager, boolean thisPlayer) {
+    public Player(String id, String answer, PlayersManager playersManager, boolean thisPlayer) {
         mId = id;
         mPlayersManager = playersManager;
         mPlayerHandler = new PlayerHandler(this);

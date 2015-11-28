@@ -1,4 +1,4 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.WifiP2p;
 
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;

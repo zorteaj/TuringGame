@@ -1,7 +1,10 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.Session;
 
 
 import android.os.Handler;
+
+import com.jzap.turing.turinggame.Message.MessageTypes;
+import com.jzap.turing.turinggame.UI.PeerDisplayActivity;
 
 /**
  * Created by JZ_W541 on 11/25/2015.

@@ -1,4 +1,4 @@
-package com.jzap.turing.turinggame;
+package com.jzap.turing.turinggame.UI;
 
 import android.content.Context;
 import android.content.IntentFilter;
@@ -15,6 +15,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.jzap.turing.turinggame.Player.PlayersManager;
+import com.jzap.turing.turinggame.R;
+import com.jzap.turing.turinggame.Session.Session;
+import com.jzap.turing.turinggame.Session.SessionManager;
+import com.jzap.turing.turinggame.Session.SessionMessageHandler;
+import com.jzap.turing.turinggame.WifiP2p.WifiP2pBroadcastReceiver;
 
 public class MainActivity extends AppCompatActivity implements PeerDisplayActivity {
 
