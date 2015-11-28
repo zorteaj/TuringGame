@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -36,22 +38,22 @@ public class ClientSession extends Session {
         while (mSessionState != SessionState.TERMINATE) {  //  Todo: Make sure all blocking requests timeout so this condition is hit on termination, instead of app hanging
 
             if (mSessionState == SessionState.COLD) {
-                Log.i(mTag, "Session state = COLD");
+                //Log.i(mTag, "Session state = COLD");
                 requestQuestion();
             } else if (mSessionState == SessionState.WAITING_FOR_QUESTION) {
-                Log.i(mTag, "Session state = WAITING FOR QUESTION");
+                //Log.i(mTag, "Session state = WAITING FOR QUESTION");
                 listenForAndProcessQuestion();
             } else if (mSessionState == SessionState.ANSWERING) {
-                Log.i(mTag, "Session state = ANSWERING");
+                //Log.i(mTag, "Session state = ANSWERING");
                 if(once) {
                     mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
                     once = false; // TODO : This is a test and in general is quite bad.  For one, button should be disabled afterwards again, adn this once thing is bad design and would need to be reset anyway
                 }
             } else if (mSessionState == SessionState.SENDING_ANSWER) {
-                Log.i(mTag, "Session state = SENDING_ANSWER");
+                //Log.i(mTag, "Session state = SENDING_ANSWER");
                 answerQuestion();
             } else if (mSessionState == SessionState.ANSWERED) {
-                Log.i(mTag, "Session state = ANSWERED");
+                //Log.i(mTag, "Session state = ANSWERED");
                 listenForAndProcessAnswers();
                 setState(SessionState.COLD); // TODO : Just a test
             }
@@ -82,7 +84,12 @@ public class ClientSession extends Session {
 
     @Override
     protected void answerQuestion() {
-        super.answerQuestion();
+        List<Message> answerMessages = new ArrayList<>();
+        Message answerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
+        answerMessages.add(answerMessage);
+        Log.i(mTag, "Sending answer: " + mAnswer);
+        sendMessages(answerMessages);
+        setState(SessionState.ANSWERED);
     }
 
     @Override

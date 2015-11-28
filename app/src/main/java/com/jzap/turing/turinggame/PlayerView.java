@@ -11,21 +11,22 @@ import android.widget.TextView;
  */
 public class PlayerView extends LinearLayout {
 
-    private WifiP2pDevice mDevice = null;
+    //private WifiP2pDevice mDevice = null;
+    private String mPlayerId;
     private TextView mDeviceName_TextView;
     private TextView mAnswer_TextView;
     private ViewGroup.LayoutParams mLayoutParams;
 
     // TODO : Give these a boarder so visually distinguishable
 
-    public PlayerView(Context context, WifiP2pDevice device) {
+    public PlayerView(Context context, String playerId) {
         super(context);
 
-        mDevice = device;
+        mPlayerId = playerId;
         mDeviceName_TextView = new TextView(context);
         mAnswer_TextView = new TextView(context);
         mLayoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mDeviceName_TextView.setText(mDevice.deviceName);
+        mDeviceName_TextView.setText(mPlayerId);
         mDeviceName_TextView.setLayoutParams(mLayoutParams);
         mAnswer_TextView.setLayoutParams(mLayoutParams);
 

@@ -1,5 +1,6 @@
 package com.jzap.turing.turinggame;
 
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Handler;
 import android.util.Log;
 
@@ -10,7 +11,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import java.net.ServerSocket;
-
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by JZ_W541 on 11/25/2015.
@@ -39,19 +41,19 @@ public class GroupOwnerSession extends Session {
         while (mSessionState != SessionState.TERMINATE) {
 
             if (mSessionState == SessionState.COLD) {
-                Log.i(mTag, "Session state = COLD");
+                //Log.i(mTag, "Session state = COLD");
                 listenForAndProcessQuestionRequest();
             } else if (mSessionState == SessionState.ANSWERING) {
-                Log.i(mTag, "Session state = ANSWERING");
+                //Log.i(mTag, "Session state = ANSWERING");
                 if (once) {
                     mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
                     once = false; // TODO : This is a test and in general is quite bad.  For one, button should be disabled afterwards again, adn this once thing is bad design and would need to be reset anyway
                 }
             } else if (mSessionState == SessionState.SENDING_ANSWER) {
-                Log.i(mTag, "Session state = SENDING_ANSWER");
+                //Log.i(mTag, "Session state = SENDING_ANSWER");
                 answerQuestion();
             } else if (mSessionState == SessionState.ANSWERED) {
-                Log.i(mTag, "Session state = ANSWERED");
+                //Log.i(mTag, "Session state = ANSWERED");
                 listenForAndProcessAnswers();
                 setState(SessionState.COLD); // TODO : Just a test
             }
@@ -88,9 +90,20 @@ public class GroupOwnerSession extends Session {
     @Override
     protected void answerQuestion() {
 
-        // TODO : Set AI Answer
+        // TODO AI
 
-        super.answerQuestion();
+        List<Message> answerMessages = new ArrayList<>();
+
+        Message playerAnswerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer);
+        Message aiAnswerMessage = new Message("AI", Message.Type.ANSWER, "AIs answer"); // TODO : Just a test
+
+        answerMessages.add(playerAnswerMessage);
+        answerMessages.add(aiAnswerMessage);
+
+        Log.i(mTag, "Sending answer: " + mAnswer);
+        sendMessages(answerMessages);
+        setState(SessionState.ANSWERED);
+
     }
 
     @Override
@@ -134,4 +147,5 @@ public class GroupOwnerSession extends Session {
 
         setState(SessionState.ANSWERING);
     }
+
 }

@@ -52,8 +52,15 @@ public class PlayersManager {
         if((player = findPlayerById(message.getPlayerId())) != null) {
             player.setAnswer(message.getBody());
         } else {
-            // TODO : Add player??
             Log.i(mTag, "Trying to process answer, but player does not exist");
+            Log.i(mTag, "ID = " + message.getPlayerId());
+            if(message.getPlayerId().equals("AI")) {
+                mPlayers.add(new Player("AI", message.getBody(), this));
+                Log.i(mTag, "Adding AI");
+            } else {
+                // TODO : Add player??
+                Log.i(mTag, "Add failed");
+            }
         }
     }
 
@@ -68,7 +75,7 @@ public class PlayersManager {
     Player findPlayerById(String id) {
         Player player = null;
         for(int i = 0; i < mPlayers.size(); i++) {
-            if(id.equals(mPlayers.get(i).getId())) {
+            if (id.equals(mPlayers.get(i).getId())) {
                 player = mPlayers.get(i);
             }
         }

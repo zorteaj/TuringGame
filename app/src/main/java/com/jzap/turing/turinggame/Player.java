@@ -12,22 +12,37 @@ import android.os.Looper;
 public class Player implements Serializable {
 
     private PlayersManager mPlayersManager;
-    private WifiP2pDevice mDevice;
     private PlayerView mPlayerView;
+    private String mId;
 
     private PlayerHandler mPlayerHandler;
 
     Player(WifiP2pDevice device, PlayersManager playersManager, boolean thisPlayer) {
-        mDevice = device;
+        this(device.deviceAddress, null, playersManager, thisPlayer);
+    }
+
+    Player(WifiP2pDevice device, PlayersManager playersManager) {
+        this(device, playersManager, false);
+    }
+
+    Player(String id, PlayersManager playersManager) {
+        this(id, null, playersManager, false);
+    }
+
+    Player(String id, String answer, PlayersManager playersManager) {
+        this(id, answer, playersManager, false);
+    }
+
+    Player(String id, String answer, PlayersManager playersManager, boolean thisPlayer) {
+        mId = id;
         mPlayersManager = playersManager;
         mPlayerHandler = new PlayerHandler(this);
         if(!thisPlayer) {
             addSelfToPlayersManager();
         }
-    }
-
-    Player(WifiP2pDevice device, PlayersManager playersManager) {
-        this(device, playersManager, false);
+        if(answer != null) {
+            setAnswer(answer);
+        }
     }
 
     private class PlayerHandler extends Handler {
@@ -43,28 +58,42 @@ public class Player implements Serializable {
         public void handleMessage(android.os.Message message) {
             if (message.what == MessageTypes.CONTENT_ANSWER) {
                 mPlayer.getPlayerView().setAnswer((String) message.obj);
+            } else if(message.what == MessageTypes.CONTROL_ADD_PLAYER) {
+                mPlayerView = new PlayerView(mPlayersManager.getActivity(), mId);
+                mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);
             }
         }
     }
 
     private void addSelfToPlayersManager() {
-        mPlayerView = new PlayerView(mPlayersManager.getActivity(), mDevice);
-        mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);
+        mPlayerHandler.obtainMessage(MessageTypes.CONTROL_ADD_PLAYER).sendToTarget();
+
+        /*mPlayerView = new PlayerView(mPlayersManager.getActivity(), mId);
+        mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);*/
     }
 
-    public WifiP2pDevice getDevice() {
+  /*  //public WifiP2pDevice getDevice() {
         return mDevice;
-    }
+    }*/
 
     public String getId() {
-        return mDevice.deviceAddress;
+        return mId;
     }
 
     public void setAnswer(String answer) {
         mPlayerHandler.obtainMessage(MessageTypes.CONTENT_ANSWER, answer).sendToTarget();
     }
 
+   /* public void setPlayerView(PlayerView playerView) {
+        mPlayerView = playerView;
+    }*/
+
     public PlayerView getPlayerView() {
         return mPlayerView;
     }
+
+/*    public PlayersManager getPlayersManager() {
+        return mPlayersManager;
+    }*/
+
 }
