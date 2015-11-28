@@ -81,4 +81,10 @@ public class PlayersManager {
     List<Player> getPlayersList() {
         return mPlayersList;
     }
+
+    public void enableVoting(boolean enable) {
+        for (int i = 0; i < mPlayersList.size(); i++) {
+            mPlayersList.get(i).getPlayerView().setClickable(enable);
+        }
+    }
 }
