@@ -5,6 +5,7 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import java.io.Serializable;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 
 import com.jzap.turing.turinggame.Message.MessageTypes;
 
@@ -19,6 +20,8 @@ public class Player implements Serializable {
     protected PlayersManager mPlayersManager;
     private PlayerView mPlayerView;
     private String mId;
+
+    private int mPoints = 0;
 
     private PlayerHandler mPlayerHandler;
 
@@ -42,9 +45,10 @@ public class Player implements Serializable {
         mId = id;
         mPlayersManager = playersManager;
         mPlayerHandler = new PlayerHandler(this);
-        if(!thisPlayer) {
-            addSelfToPlayersManager();
-        }
+        mPoints = 0;
+        //if(!thisPlayer) {
+            addSelfToPlayersManager(); // TODO : Testing - is there a reason not to add self? Is it bad to show up in the list?
+        //}
         if(answer != null) {
             setAnswer(answer);
         }
@@ -67,6 +71,11 @@ public class Player implements Serializable {
                 mPlayerView = new PlayerView(mPlayersManager.getActivity(), mId);
                 mPlayersManager.getPlayersList().add(mPlayer);
                 mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);
+            } else if(message.what == MessageTypes.INFO_THIS_PLAYER_SCORED) {
+                Toast.makeText(mPlayersManager.getActivity(), "Point Scored! Total: " + (Integer) message.obj,
+                        Toast.LENGTH_LONG).show();
+            } else if (message.what == MessageTypes.INFO_POINT_SCORED) {
+                mPlayer.getPlayerView().setPoints((Integer) message.obj);
             }
         }
     }
@@ -88,6 +97,15 @@ public class Player implements Serializable {
 
     public PlayerView getPlayerView() {
         return mPlayerView;
+    }
+
+    public void addPoint() {
+        mPoints++;
+        mPlayerHandler.obtainMessage(MessageTypes.INFO_POINT_SCORED, mPoints).sendToTarget();
+        // If this player (who scored the point) is the player on this device, send a toast on this device
+        if(this == mPlayersManager.getThisPlayer()) {
+            mPlayerHandler.obtainMessage(MessageTypes.INFO_THIS_PLAYER_SCORED, mPoints).sendToTarget();
+        }
     }
 
 }

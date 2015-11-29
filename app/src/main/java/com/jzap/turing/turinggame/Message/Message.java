@@ -13,7 +13,7 @@ public class Message implements Serializable { // TODO : Rename to deconflict wi
     private Type mType;
     private String mBody;
 
-    public enum Type {QUESTION_REQUEST, QUESTION, ANSWER}
+    public enum Type {QUESTION_REQUEST, QUESTION, ANSWER, VOTE}
 
     public Message(Player player, Type type, String body) {
         mPlayerId = player.getId();

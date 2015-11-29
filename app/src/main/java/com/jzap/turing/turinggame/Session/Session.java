@@ -82,8 +82,39 @@ abstract public class Session implements Runnable {
 
     public void castVote(String playerId) {
         Log.i(mTag, "Voted for " + playerId); // TODO : Actually send this
-        enableVoting(false);
+        // Process the vote from this player locally
+        processVote(mPlayersManager.getThisPlayer().getId(), playerId);
+        // Publish the vote from this player onto the network
+        publishVote(playerId);
         setState(SessionState.WAITING_FOR_VOTES);
+        enableVoting(false); // TODO : **** I THINK THAT WITH SOME BAD TIMING THIS IS A CRITICAL PROBLEM *****
+    }
+
+    protected void publishVote(String playerId) {
+        Message voteMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.VOTE, playerId);
+        sendMessage(voteMessage);
+    }
+
+    protected void listenForAndProcessVotes() {
+        try {
+            Message voteMessage = (Message) mIn.readObject();
+            if(voteMessage.getType() == Message.Type.VOTE) {
+                processVote(voteMessage.getPlayerId(), voteMessage.getBody());
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void processVote(String voter, String vote) {
+        Log.i(mTag, "Processing Vote");
+        if(vote.equals(mAiPlayer.getId())) {
+            mPlayersManager.findPlayerById(voter).addPoint();
+        } else {
+            // TODO : Do something else
+        }
     }
 
     protected void sendMessage(Message message) {

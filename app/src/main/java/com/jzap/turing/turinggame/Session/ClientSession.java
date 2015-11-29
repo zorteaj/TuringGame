@@ -40,30 +40,38 @@ public class ClientSession extends Session {
         while (mSessionState != SessionState.TERMINATE) {  //  Todo: Make sure all blocking requests timeout so this condition is hit on termination, instead of app hanging
             switch(mSessionState) {
                 case COLD:
+                    //Log.i(mTag, "COLD");
                     requestQuestion();
                     break;
                 case WAITING_FOR_QUESTION:
+                    //Log.i(mTag, "WAITING_FOR_QUESTION");
                     listenForAndProcessQuestion();
                     break;
                 case ANSWERING:
+                    //Log.i(mTag, "ANSWERING");
                     if(!mAnsweringEnabled) {
                         enableAnswering(true);
                     }
                     break;
                 case SENDING_ANSWER:
+                    //Log.i(mTag, "SENDING_ANSWER");
                     enableAnswering(false);
                     answerQuestion();
                     break;
                 case ANSWERED:
+                    //Log.i(mTag, "ANSWERED");
                     listenForAndProcessAnswers();
                     break;
                 case VOTING:
+                    //Log.i(mTag, "VOTING");
                     if(!mVotingEnabled) {
                         enableVoting(true);
                     }
                     break;
                 case WAITING_FOR_VOTES:
-
+                    //Log.i(mTag, "WAITING_FOR_VOTES");
+                    listenForAndProcessVotes();
+                    setState(SessionState.COLD);
                     break;
             }
         }
@@ -106,11 +114,17 @@ public class ClientSession extends Session {
         setState(SessionState.ANSWERING);
     }
 
-    private void listenForAndProcessQuestion() {
+    private void listenForAndProcessQuestion() { // TODO : Commonize these listenForAndProcess methods
+        Log.i(mTag, "listening for a processing question");
         try {
+            Log.i(mTag, "trying to get meesage...");
             Message questionMessage = (Message) mIn.readObject();
+            Log.i(mTag, "got it...");
             if(questionMessage.getType() == Message.Type.QUESTION) {
+                Log.i(mTag, "about to process message");
                 processQuestion(questionMessage.getBody());
+            } else {
+                Log.i(mTag, "wrong message type");
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

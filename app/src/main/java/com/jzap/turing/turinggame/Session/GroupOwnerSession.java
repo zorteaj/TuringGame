@@ -42,27 +42,34 @@ public class GroupOwnerSession extends Session {
         while (mSessionState != SessionState.TERMINATE) {
             switch(mSessionState) {
                 case COLD:
+                    //Log.i(mTag, "COLD");
                     listenForAndProcessQuestionRequest();
                     break;
                 case ANSWERING:
+                   // Log.i(mTag, "ANSWERING");
                     if (!mAnsweringEnabled) {
                        enableAnswering(true);
                     }
                     break;
                 case SENDING_ANSWER:
+                   // Log.i(mTag, "SENDING_ANSWER");
                    enableAnswering(false);
                     answerQuestion();
                     break;
                 case ANSWERED:
+                    //Log.i(mTag, "ANSWERED");
                     listenForAndProcessAnswers();
-                    setState(SessionState.COLD); // TODO : Just a test
                 case VOTING:
+                   // Log.i(mTag, "VOTING");
                     if(!mVotingEnabled) {
                         enableVoting(true);
                     }
                     break;
                 case WAITING_FOR_VOTES:
-
+                    //Log.i(mTag, "WAITING_FOR_VOTES");
+                    listenForAndProcessVotes();
+                    Log.i(mTag, "Setting to cold");
+                    setState(SessionState.COLD);
                     break;
             }
         }

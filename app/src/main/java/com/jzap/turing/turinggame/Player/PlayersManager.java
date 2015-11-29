@@ -1,5 +1,6 @@
 package com.jzap.turing.turinggame.Player;
 
+import android.graphics.Color;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.support.v7.app.AppCompatActivity;
 
@@ -10,6 +11,7 @@ import com.jzap.turing.turinggame.UI.MainActivity;
 import com.jzap.turing.turinggame.Message.Message;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -35,9 +37,20 @@ public class PlayersManager {
     // a new person tries to join - might mess things ups
     public void setPeers(List peers) {
         mPlayers_LinearLayout.removeAllViews();
-        mPlayersList.clear();
+        clearPlayersListExceptThis();
         for(int i = 0; i < peers.size(); i++) {
             new Player((WifiP2pDevice) peers.get(i), this);
+        }
+    }
+
+    // Clears out mPlayersList, except for this device's player
+    private void clearPlayersListExceptThis() {
+        Iterator<Player> iter = mPlayersList.iterator();
+        while(iter.hasNext()) {
+            Player player = iter.next();
+            if(player != mThisPlayer) {
+                iter.remove();
+            }
         }
     }
 
@@ -61,6 +74,7 @@ public class PlayersManager {
     }
 
     public void setThisPlayer(Player player) {
+        Log.i(mTag, "This player is set");
         mThisPlayer = player;
     }
 
@@ -68,7 +82,7 @@ public class PlayersManager {
         return mThisPlayer;
     }
 
-    Player findPlayerById(String id) {
+    public Player findPlayerById(String id) {
         Player player = null;
         for(int i = 0; i < mPlayersList.size(); i++) {
             if (id.equals(mPlayersList.get(i).getId())) {
@@ -83,8 +97,15 @@ public class PlayersManager {
     }
 
     public void enableVoting(boolean enable) {
+        Log.i(mTag, "Enable = " + String.valueOf(enable));
+        int color = Color.RED;
+        if(enable) {
+            color = Color.GREEN;
+        }
         for (int i = 0; i < mPlayersList.size(); i++) {
             mPlayersList.get(i).getPlayerView().setClickable(enable);
+            mPlayersList.get(i).getPlayerView().setBackgroundColor(color);
         }
     }
+
 }
