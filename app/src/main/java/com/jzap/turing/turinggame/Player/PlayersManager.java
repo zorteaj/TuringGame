@@ -36,7 +36,7 @@ public class PlayersManager {
     // TODO : If user clicks set peers in the middle of the game, it will update the list and blank out answers.  Should probably disable this manually and automatically (in case
     // a new person tries to join - might mess things ups
     public void setPeers(List peers) {
-        mPlayers_LinearLayout.removeAllViews();
+        //mPlayers_LinearLayout.removeAllViews();
         clearPlayersListExceptThis();
         for(int i = 0; i < peers.size(); i++) {
             new Player((WifiP2pDevice) peers.get(i), this);
@@ -48,7 +48,8 @@ public class PlayersManager {
         Iterator<Player> iter = mPlayersList.iterator();
         while(iter.hasNext()) {
             Player player = iter.next();
-            if(player != mThisPlayer) {
+            if(!(player.getId().equals(mThisPlayer.getId()))) {
+                mPlayers_LinearLayout.removeView(player.getPlayerView());
                 iter.remove();
             }
         }
@@ -66,6 +67,7 @@ public class PlayersManager {
         Log.i(mTag, "Answer = " + message.getBody());
         Player player = null;
         if ((player = findPlayerById(message.getPlayerId())) != null) {
+            player.setName(message.getPlayerName());
             player.setAnswer(message.getBody());
         } else {
             // TODO : Add player??
@@ -102,10 +104,21 @@ public class PlayersManager {
         if(enable) {
             color = Color.GREEN;
         }
-        for (int i = 0; i < mPlayersList.size(); i++) {
+        for(int i = 0; i < mPlayersList.size(); i++) {
             mPlayersList.get(i).getPlayerView().setClickable(enable);
             mPlayersList.get(i).getPlayerView().setBackgroundColor(color);
         }
     }
 
+    public void revealNames() {
+        for(int i = 0; i < mPlayersList.size(); i++) {
+            mPlayersList.get(i).revealName();
+        }
+    }
+
+    public void hideNames() {
+        for(int i = 0; i < mPlayersList.size(); i++) {
+            mPlayersList.get(i).hideName();
+        }
+    }
 }

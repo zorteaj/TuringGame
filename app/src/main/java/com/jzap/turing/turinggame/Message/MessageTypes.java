@@ -14,7 +14,9 @@ public class MessageTypes {
     public static final int CONTROL_ENABLE_VOTING = 5;
     public static final int CONTROL_DISABLE_VOTING = 6;
     public static final int CONTROL_ADD_PLAYER = 7;
+    public static final int CONTROL_REVEAL_NAME = 8;
+    public static final int CONTROL_HIDE_NAME = 9;
     // Info
-    public static final int INFO_POINT_SCORED = 8;
-    public static final int INFO_THIS_PLAYER_SCORED = 9;
+    public static final int INFO_POINT_SCORED = 10;
+    public static final int INFO_THIS_PLAYER_SCORED = 11;
 }

@@ -10,7 +10,8 @@ public class AiPlayer extends Player {
     private Message mAnswerMessage;
 
     public AiPlayer(PlayersManager playersManager) {
-        super("AI", playersManager);
+        super( playersManager, "AI", "AI");
+        hideName();
     }
 
     public Message answerQuestion() {

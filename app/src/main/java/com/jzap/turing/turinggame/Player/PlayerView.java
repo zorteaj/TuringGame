@@ -19,6 +19,7 @@ public class PlayerView extends LinearLayout {
 
     //private WifiP2pDevice mDevice = null;
     private String mPlayerId;
+    private String mPlayerName;
     private TextView mDeviceName_TextView;
     private TextView mAnswer_TextView;
     private TextView mPoints_TextView;
@@ -27,17 +28,19 @@ public class PlayerView extends LinearLayout {
 
     // TODO : Give these a boarder so visually distinguishable
 
-    public PlayerView(Context context, String playerId) {
+    public PlayerView(Context context, String playerId, String playerName) {
         super(context);
 
         mPlayerId = playerId;
+        mPlayerName = playerName;
         mDeviceName_TextView = new TextView(context);
         mAnswer_TextView = new TextView(context);
         mPoints_TextView = new TextView(context);
 
         mLayoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        mDeviceName_TextView.setText(mPlayerId);
+       // mDeviceName_TextView.setText(mPlayerId);
+        mDeviceName_TextView.setText(mPlayerName); // TODO : If continued to use this way, change name (it's not device name, it's player name)
 
         mDeviceName_TextView.setLayoutParams(mLayoutParams);
         mAnswer_TextView.setLayoutParams(mLayoutParams);
@@ -68,6 +71,11 @@ public class PlayerView extends LinearLayout {
         mAnswer_TextView.setText("Answer: " + answer); // TODO : There are nicer ways to do this
     }
 
+    public void setName(String name) {
+        mPlayerName = name;
+        mDeviceName_TextView.setText(mPlayerName);
+    }
+
     public void setPoints(int points) {
         Log.i(mTag, "Setting points");
         mPoints_TextView.setText("Points: " + String.valueOf(points)); // TODO : There are nicer ways to do this
@@ -80,6 +88,7 @@ public class PlayerView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 mActivity.getSession().castVote(mPlayerId);
+                mActivity.getPlayersManager().revealNames();
             }
         });
     }

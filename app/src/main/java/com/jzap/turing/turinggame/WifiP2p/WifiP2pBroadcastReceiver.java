@@ -10,10 +10,12 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.jzap.turing.turinggame.UI.MainActivity;
 import com.jzap.turing.turinggame.UI.PeerDisplayActivity;
-import com.jzap.turing.turinggame.Player.Player;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 import com.jzap.turing.turinggame.Session.SessionManager;
 
@@ -61,8 +63,11 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
             Log.i(mTag, mPeers.size() + " Peers Available");
 
             //mActivity.setPeers(mPeers);
-            ((MainActivity) mActivity).getPlayersManager().setPeers(mPeers); // TODO : This can't be good design, and is test
+            ((MainActivity) mActivity).getPlayersManager().setPeers(mPeers); // TODO : This can't be good design
+
+            ((MainActivity) mActivity).removeProgressBar();
         }
+
     };
 
     public void disconnect() {
@@ -158,9 +163,10 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
             Log.i(mTag, "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
 
             PlayersManager playersManager = ((MainActivity) mActivity).getPlayersManager(); // TODO : This must be bad design (the cast)
+            playersManager.getThisPlayer().setId(((WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE)).deviceAddress);
 
-            Player thisPlayer = new Player((WifiP2pDevice)intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE), playersManager, true);
-            playersManager.setThisPlayer(thisPlayer);
+           /* Player thisPlayer = new Player((WifiP2pDevice)intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE), playersManager, true);
+            playersManager.setThisPlayer(thisPlayer);*/
         }
     }
 }

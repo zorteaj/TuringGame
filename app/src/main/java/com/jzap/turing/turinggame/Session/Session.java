@@ -61,6 +61,7 @@ abstract public class Session implements Runnable {
         Log.i(mTag, "Listening for and processing answers");
         try {
             List<Message> answersMessages = (List<Message>) mIn.readObject();
+
             for(int i = 0; i < answersMessages.size(); i++) {
                 if (answersMessages.get(i).getType() == Message.Type.ANSWER) {
                     Log.i(mTag, "Answer = " + answersMessages.get(i).getBody());
@@ -98,6 +99,7 @@ abstract public class Session implements Runnable {
     protected void listenForAndProcessVotes() {
         try {
             Message voteMessage = (Message) mIn.readObject();
+
             if(voteMessage.getType() == Message.Type.VOTE) {
                 processVote(voteMessage.getPlayerId(), voteMessage.getBody());
             }

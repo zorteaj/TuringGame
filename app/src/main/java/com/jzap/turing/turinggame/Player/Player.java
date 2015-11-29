@@ -20,13 +20,16 @@ public class Player implements Serializable {
     protected PlayersManager mPlayersManager;
     private PlayerView mPlayerView;
     private String mId;
+    private String mName;
 
     private int mPoints = 0;
 
     private PlayerHandler mPlayerHandler;
 
+    // TODO : Make order of constructor params consistent
+
     public Player(WifiP2pDevice device, PlayersManager playersManager, boolean thisPlayer) {
-        this(device.deviceAddress, null, playersManager, thisPlayer);
+        this(device.deviceAddress, null, "?", playersManager, thisPlayer);
     }
 
     public Player(WifiP2pDevice device, PlayersManager playersManager) {
@@ -34,14 +37,25 @@ public class Player implements Serializable {
     }
 
     public Player(String id, String answer, PlayersManager playersManager) {
-        this(id, answer, playersManager, false);
+        this(id, answer, "?", playersManager, false);
+    }
+
+    public Player(PlayersManager playersManager, String id, String name) {
+        this(id, null, name, playersManager, false);
     }
 
     public Player(String id, PlayersManager playersManager) {
-        this(id, null, playersManager, false);
+        this(id, null, "?", playersManager, false);
     }
 
-    public Player(String id, String answer, PlayersManager playersManager, boolean thisPlayer) {
+    public Player(PlayersManager playersManager, String name, boolean thisPlayer) {
+        this(null, null, name, playersManager, thisPlayer);
+    }
+
+    public Player(String id, String answer, String name, PlayersManager playersManager, boolean thisPlayer) {
+        if(name != null) {
+            setName(name);
+        }
         mId = id;
         mPlayersManager = playersManager;
         mPlayerHandler = new PlayerHandler(this);
@@ -51,6 +65,9 @@ public class Player implements Serializable {
         //}
         if(answer != null) {
             setAnswer(answer);
+        }
+        if(thisPlayer) {
+            mPlayersManager.setThisPlayer(this);
         }
     }
 
@@ -68,7 +85,7 @@ public class Player implements Serializable {
             if (message.what == MessageTypes.CONTENT_ANSWER) {
                 mPlayer.getPlayerView().setAnswer((String) message.obj);
             } else if(message.what == MessageTypes.CONTROL_ADD_PLAYER) {
-                mPlayerView = new PlayerView(mPlayersManager.getActivity(), mId);
+                mPlayerView = new PlayerView(mPlayersManager.getActivity(), mId, mName);
                 mPlayersManager.getPlayersList().add(mPlayer);
                 mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);
             } else if(message.what == MessageTypes.INFO_THIS_PLAYER_SCORED) {
@@ -76,6 +93,10 @@ public class Player implements Serializable {
                         Toast.LENGTH_LONG).show();
             } else if (message.what == MessageTypes.INFO_POINT_SCORED) {
                 mPlayer.getPlayerView().setPoints((Integer) message.obj);
+            } else if(message.what == MessageTypes.CONTROL_REVEAL_NAME) {
+                mPlayer.getPlayerView().setName((String) message.obj);
+            } else if(message.what == MessageTypes.CONTROL_HIDE_NAME) {
+                mPlayer.getPlayerView().setName("?");
             }
         }
     }
@@ -89,6 +110,26 @@ public class Player implements Serializable {
 
     public String getId() {
         return mId;
+    }
+
+    public void setId(String id) {
+        mId = id;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        mName = name;
+    }
+
+    public void revealName() {
+        mPlayerHandler.obtainMessage(MessageTypes.CONTROL_REVEAL_NAME, mName).sendToTarget();
+    }
+
+    public void hideName() {
+        mPlayerHandler.obtainMessage(MessageTypes.CONTROL_HIDE_NAME, mName).sendToTarget();
     }
 
     public void setAnswer(String answer) {

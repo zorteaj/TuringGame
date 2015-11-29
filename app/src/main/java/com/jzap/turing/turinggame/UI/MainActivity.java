@@ -2,11 +2,15 @@ package com.jzap.turing.turinggame.UI;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -15,8 +19,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.jzap.turing.turinggame.Player.Player;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 import com.jzap.turing.turinggame.R;
 import com.jzap.turing.turinggame.Session.Session;
@@ -39,12 +45,17 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     private SessionMessageHandler mHandler = null;
     private Session mSession = null;
 
+    private LinearLayout mMain_LinearLayout;
     private LinearLayout mPlayers_LinearLayout;
     private LinearLayout mNameInput_LinearLayout;
+    private EditText mPlayerName_EditText;
     private Button mBeginGame_Button;
     private TextView mQuestion_TextView;
     private Button mSubmitAnswer_Button;
+    private Button mDiscoverPeers_Button;
     private EditText mAnswer_EditText;
+    private ProgressBar mDiscoverPeers_ProgressBar;
+    private TextView mDiscoverPeers_TextView;
 
     private boolean mIsReady = false;
     private boolean mInit = false;
@@ -56,17 +67,17 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
        // Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
        // setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+  /*      FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         init();
-
+        startPeerDiscovery();
     }
 
     @Override
@@ -111,8 +122,9 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
         if(!mInit) {
             mHandler = new SessionMessageHandler(this);
             initializeUiViews();
-            initializeWifiP2pNetwork();
             mPlayersManager = new PlayersManager(this); // TODO : Test
+            Player thisPlayer = new Player(mPlayersManager, "You", true);
+            initializeWifiP2pNetwork();
         }
         mInit = true;
     }
@@ -133,17 +145,49 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     }
 
     private void initializeUiViews() {
+        mMain_LinearLayout = (LinearLayout) findViewById(R.id.main_LinearLayout);
+
         mPlayers_LinearLayout = (LinearLayout) findViewById(R.id.peers_LinearLayout);
+
         mNameInput_LinearLayout = (LinearLayout) findViewById(R.id.nameInput_LinearLayout);
 
+        mPlayerName_EditText = (EditText) findViewById(R.id.nameInput_EditText);
+        setupPlayerNameEditText();
+
         mBeginGame_Button = (Button) findViewById(R.id.beginGame_Button);
+        mBeginGame_Button.setEnabled(false);
 
         mQuestion_TextView = (TextView) findViewById(R.id.question_TextView);
 
         mSubmitAnswer_Button = (Button) findViewById(R.id.submitAnswer_Button);
-        mSubmitAnswer_Button.setClickable(false);
+        mSubmitAnswer_Button.setEnabled(false);
 
         mAnswer_EditText = (EditText) findViewById(R.id.answer_EditText);
+
+        mDiscoverPeers_Button = (Button) findViewById(R.id.discoverPeers_button);
+        mDiscoverPeers_ProgressBar = (ProgressBar) findViewById(R.id.discoverPeers_ProgressBar);
+        mDiscoverPeers_TextView = (TextView) findViewById(R.id.discoverPeers_TextView);
+    }
+
+    public void setupPlayerNameEditText() {
+        mPlayerName_EditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count > 0) {
+                    mBeginGame_Button.setEnabled(true);
+                } else {
+                    mBeginGame_Button.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private void initializeWifiP2pNetwork() {
@@ -173,7 +217,14 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     public void discoverPeersClicked(View v) {
         Log.i(mTag, "Discover Peers Button Clicked");
+        if(mDiscoverPeers_ProgressBar == null) {
+           mDiscoverPeers_ProgressBar = new ProgressBar(this);
+            mMain_LinearLayout.addView(mDiscoverPeers_ProgressBar);
+        }
+        startPeerDiscovery();
+    }
 
+    public void startPeerDiscovery() {
         if(!mInit) {
             init(); // TODO : This may simply be a workaround to a bug wherein the activity can be running, when mInit wasn't called (or at least, broadcast receiver wasn't registered)
         }
@@ -200,28 +251,34 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
         }
     }
 
+
     public void beginGameClicked(View v) {
         Log.i(mTag, "Begin Game Button Clicked");
         if(mReceiver != null) {
             mReceiver.connect();
         }
+        mPlayersManager.getThisPlayer().setName(mPlayerName_EditText.getText().toString());
         mIsReady = true;
-        removeBeginViews();
+        editUIForGameplay();
     }
 
-    public void removeBeginViews() {
+    // Changes UI from setup mode to game-play mode (these are loose terms, no such concrete states exist)
+    public void editUIForGameplay() {
         if(mNameInput_LinearLayout != null) {
-            ((ViewGroup) mNameInput_LinearLayout.getParent()).removeView(mNameInput_LinearLayout);
+            mPlayerName_EditText.setEnabled(false);
         }
         if(mBeginGame_Button != null) {
             ((ViewGroup) mBeginGame_Button.getParent()).removeView(mBeginGame_Button);
+        }
+        if(mDiscoverPeers_Button != null) {
+            mDiscoverPeers_Button.setEnabled(false);
+            ((ViewGroup) mDiscoverPeers_Button.getParent()).removeView(mDiscoverPeers_Button);
         }
     }
 
     public void submitAnswerClicked(View v) {
         Log.i(mTag, "Submit Answer Button Clicked");
         if(mSession != null) {
-            //mSession.setState(Session.SessionState.ANSWERED);
             mSession.setAnswer(mAnswer_EditText.getText().toString());
         }
     }
@@ -265,6 +322,19 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     public boolean isReady() {
         return mIsReady;
+    }
+
+    public void removeProgressBar() {
+
+        if(mDiscoverPeers_ProgressBar != null) {
+            ((ViewGroup) mDiscoverPeers_ProgressBar.getParent()).removeView(mDiscoverPeers_ProgressBar); // TODO : This can't be good design
+            mDiscoverPeers_ProgressBar = null;
+        }
+
+        if(mDiscoverPeers_TextView != null) {
+            ((ViewGroup) mDiscoverPeers_TextView.getParent()).removeView(mDiscoverPeers_TextView); // TODO : This can't be good design
+            mDiscoverPeers_TextView = null;
+        }
     }
 
 }
