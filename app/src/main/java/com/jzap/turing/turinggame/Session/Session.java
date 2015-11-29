@@ -5,9 +5,9 @@ import android.util.Log;
 
 import com.jzap.turing.turinggame.Message.Message;
 import com.jzap.turing.turinggame.Message.MessageTypes;
-import com.jzap.turing.turinggame.Player.Player;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 import com.jzap.turing.turinggame.Player.AiPlayer;
+import com.jzap.turing.turinggame.UI.MainActivity;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,7 +24,7 @@ abstract public class Session implements Runnable {
 
     protected static final int mPort = 8886; // TODO : Is this number okay?
 
-    protected enum SessionState {COLD, WAITING_FOR_QUESTION, ANSWERING, SENDING_ANSWER, ANSWERED, VOTING, WAITING_FOR_VOTES, TERMINATE} // TODO : Keep an eye on whether these get used
+    protected enum SessionState {COLD, READY, WAITING_FOR_QUESTION, ANSWERING, SENDING_ANSWER, ANSWERED, VOTING, WAITING_FOR_VOTES, TERMINATE} // TODO : Keep an eye on whether these get used
     protected SessionState mSessionState;
 
     protected PlayersManager mPlayersManager;
@@ -168,6 +168,12 @@ abstract public class Session implements Runnable {
         } else {
             mHandler.obtainMessage(MessageTypes.CONTROL_DISABLE_VOTING).sendToTarget();
             mVotingEnabled = false;
+        }
+    }
+
+    protected void checkForReadyState() {
+        if(((MainActivity) mPlayersManager.getActivity()).isReady()) { // TODO : Bad design (cast)
+            setState(SessionState.READY);
         }
     }
 

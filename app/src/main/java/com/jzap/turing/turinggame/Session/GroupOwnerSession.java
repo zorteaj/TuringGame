@@ -42,7 +42,10 @@ public class GroupOwnerSession extends Session {
         while (mSessionState != SessionState.TERMINATE) {
             switch(mSessionState) {
                 case COLD:
-                    //Log.i(mTag, "COLD");
+                    checkForReadyState();
+                    break;
+                case READY:
+                    //Log.i(mTag, "READY");
                     listenForAndProcessQuestionRequest();
                     break;
                 case ANSWERING:
@@ -69,7 +72,7 @@ public class GroupOwnerSession extends Session {
                     //Log.i(mTag, "WAITING_FOR_VOTES");
                     listenForAndProcessVotes();
                     Log.i(mTag, "Setting to cold");
-                    setState(SessionState.COLD);
+                    setState(SessionState.READY);
                     break;
             }
         }

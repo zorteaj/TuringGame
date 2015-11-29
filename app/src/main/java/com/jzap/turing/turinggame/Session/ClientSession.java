@@ -40,7 +40,10 @@ public class ClientSession extends Session {
         while (mSessionState != SessionState.TERMINATE) {  //  Todo: Make sure all blocking requests timeout so this condition is hit on termination, instead of app hanging
             switch(mSessionState) {
                 case COLD:
-                    //Log.i(mTag, "COLD");
+                    checkForReadyState();
+                    break;
+                case READY:
+                    //Log.i(mTag, "READY");
                     requestQuestion();
                     break;
                 case WAITING_FOR_QUESTION:
@@ -71,7 +74,7 @@ public class ClientSession extends Session {
                 case WAITING_FOR_VOTES:
                     //Log.i(mTag, "WAITING_FOR_VOTES");
                     listenForAndProcessVotes();
-                    setState(SessionState.COLD);
+                    setState(SessionState.READY);
                     break;
             }
         }
@@ -117,14 +120,10 @@ public class ClientSession extends Session {
     private void listenForAndProcessQuestion() { // TODO : Commonize these listenForAndProcess methods
         Log.i(mTag, "listening for a processing question");
         try {
-            Log.i(mTag, "trying to get meesage...");
             Message questionMessage = (Message) mIn.readObject();
-            Log.i(mTag, "got it...");
             if(questionMessage.getType() == Message.Type.QUESTION) {
-                Log.i(mTag, "about to process message");
                 processQuestion(questionMessage.getBody());
             } else {
-                Log.i(mTag, "wrong message type");
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

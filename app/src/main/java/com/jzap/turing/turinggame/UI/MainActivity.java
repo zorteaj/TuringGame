@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -39,11 +40,14 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     private Session mSession = null;
 
     private LinearLayout mPlayers_LinearLayout;
+    private LinearLayout mNameInput_LinearLayout;
+    private Button mBeginGame_Button;
     private TextView mQuestion_TextView;
     private Button mSubmitAnswer_Button;
     private EditText mAnswer_EditText;
 
-    private boolean init = false;
+    private boolean mIsReady = false;
+    private boolean mInit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     public void onResume() {
         Log.i(mTag, "On Resume");
         super.onResume();
-        if(!init) {
-            init();  //TODO : This may simply be a workaround to a bug wherein the activity can be running, when init wasn't called (or at least, broadcast receiver wasn't registered) - or this may be the legit fix...
+        if(!mInit) {
+            init();  //TODO : This may simply be a workaround to a bug wherein the activity can be running, when mInit wasn't called (or at least, broadcast receiver wasn't registered) - or this may be the legit fix...
         }
     }
 
@@ -104,17 +108,17 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     }
 
     private void init() {
-        if(!init) {
+        if(!mInit) {
             mHandler = new SessionMessageHandler(this);
             initializeUiViews();
             initializeWifiP2pNetwork();
             mPlayersManager = new PlayersManager(this); // TODO : Test
         }
-        init = true;
+        mInit = true;
     }
 
     public void cleanUp() {
-        init = false;
+        mInit = false;
         if(mReceiver != null) {
             try {
                 unregisterReceiver(mReceiver); // TODO : Figure how I'm sometimes getting into a state where this is not registered here!!
@@ -130,6 +134,10 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     private void initializeUiViews() {
         mPlayers_LinearLayout = (LinearLayout) findViewById(R.id.peers_LinearLayout);
+        mNameInput_LinearLayout = (LinearLayout) findViewById(R.id.nameInput_LinearLayout);
+
+        mBeginGame_Button = (Button) findViewById(R.id.beginGame_Button);
+
         mQuestion_TextView = (TextView) findViewById(R.id.question_TextView);
 
         mSubmitAnswer_Button = (Button) findViewById(R.id.submitAnswer_Button);
@@ -166,8 +174,8 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     public void discoverPeersClicked(View v) {
         Log.i(mTag, "Discover Peers Button Clicked");
 
-        if(!init) {
-            init(); // TODO : This may simply be a workaround to a bug wherein the activity can be running, when init wasn't called (or at least, broadcast receiver wasn't registered)
+        if(!mInit) {
+            init(); // TODO : This may simply be a workaround to a bug wherein the activity can be running, when mInit wasn't called (or at least, broadcast receiver wasn't registered)
         }
 
         if(mManager != null) {
@@ -196,6 +204,17 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
         Log.i(mTag, "Begin Game Button Clicked");
         if(mReceiver != null) {
             mReceiver.connect();
+        }
+        mIsReady = true;
+        removeBeginViews();
+    }
+
+    public void removeBeginViews() {
+        if(mNameInput_LinearLayout != null) {
+            ((ViewGroup) mNameInput_LinearLayout.getParent()).removeView(mNameInput_LinearLayout);
+        }
+        if(mBeginGame_Button != null) {
+            ((ViewGroup) mBeginGame_Button.getParent()).removeView(mBeginGame_Button);
         }
     }
 
@@ -242,6 +261,10 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     public LinearLayout getPlayersLinearLayout() {
         return mPlayers_LinearLayout;
+    }
+
+    public boolean isReady() {
+        return mIsReady;
     }
 
 }
