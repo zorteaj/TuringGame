@@ -55,17 +55,19 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onPeersAvailable(WifiP2pDeviceList peerList) {
+            if(!mConnected) { // TODO : I haven't thought this all the way through
 
-            // Out with the old, in with the new.
-            mPeers.clear();
-            mPeers.addAll(peerList.getDeviceList());
+                // Out with the old, in with the new.
+                mPeers.clear();
+                mPeers.addAll(peerList.getDeviceList());
 
-            Log.i(mTag, mPeers.size() + " Peers Available");
+                Log.i(mTag, mPeers.size() + " Peers Available");
 
-            //mActivity.setPeers(mPeers);
-            ((MainActivity) mActivity).getPlayersManager().setPeers(mPeers); // TODO : This can't be good design
+                //mActivity.setPeers(mPeers);
+                ((MainActivity) mActivity).getPlayersManager().setPeers(mPeers); // TODO : This can't be good design
 
-            ((MainActivity) mActivity).removeProgressBar();
+                ((MainActivity) mActivity).removeProgressBar();
+            }
         }
 
     };
@@ -86,11 +88,10 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    // @Override
     public void connect() {
-
+        Log.i(mTag, "Connect called");
         if (!mConnected) {
-
+            Log.i(mTag, "Not yet connected");
             if (mPeers.size() > 0) {
                 WifiP2pDevice device = (WifiP2pDevice) mPeers.get(0);
 
@@ -98,7 +99,11 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
                 config.deviceAddress = device.deviceAddress;
                 config.wps.setup = WpsInfo.PBC;
 
+                Log.i(mTag, "Trying to connect to " + device.deviceAddress);
+
                 mManager.connect(mChannel, config, new WifiP2pConnectionActionListener(this));
+            } else {
+                Log.i(mTag, "No peers with which to connect");
             }
             // config.groupOwnerIntent = 15; // TODO : This may be key to multiple connections
         } else {
@@ -139,6 +144,7 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
             // Connection state changed!  We should probably do something about
             // that.
             Log.i(mTag, "WIFI_P2P_CONNECTION_CHANGED_ACTION");
+            Log.i(mTag, intent.toString());
 
             if(mManager == null) {
                 return;
@@ -146,6 +152,8 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
 
             NetworkInfo networkInfo = (NetworkInfo) intent
                     .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+
+            Log.i(mTag, networkInfo.toString());
 
             if(networkInfo.isConnected()) {
                 Log.i(mTag, "Connected!");
@@ -157,6 +165,7 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
                 mActivity.setSessionManager(sessionManager); // So that we can kill session from MainActivity (i.e., from onPause)
                 mManager.requestConnectionInfo(mChannel, sessionManager);
             } else {
+                Log.i(mTag, "Connection changed, but not connected...");
                 mConnected = false;
             }
         } else if(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {

@@ -73,6 +73,7 @@ public class ClientSession extends Session {
                     break;
                 case WAITING_FOR_VOTES:
                     //Log.i(mTag, "WAITING_FOR_VOTES");
+                    enableVoting(false);
                     listenForAndProcessVotes();
                     setState(SessionState.READY);
                     break;
@@ -108,6 +109,7 @@ public class ClientSession extends Session {
         Message answerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
         answerMessages.add(answerMessage);
         Log.i(mTag, "Sending answer: " + mAnswer);
+        postAnswersLocally(answerMessages);
         sendMessages(answerMessages);
         setState(SessionState.ANSWERED);
     }

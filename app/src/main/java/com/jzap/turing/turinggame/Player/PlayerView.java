@@ -76,6 +76,10 @@ public class PlayerView extends LinearLayout {
         mDeviceName_TextView.setText(mPlayerName);
     }
 
+    public void setPlayerId(String id) {
+        mPlayerId = id;
+    }
+
     public void setPoints(int points) {
         Log.i(mTag, "Setting points");
         mPoints_TextView.setText("Points: " + String.valueOf(points)); // TODO : There are nicer ways to do this

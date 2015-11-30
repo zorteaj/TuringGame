@@ -88,7 +88,7 @@ abstract public class Session implements Runnable {
         // Publish the vote from this player onto the network
         publishVote(playerId);
         setState(SessionState.WAITING_FOR_VOTES);
-        enableVoting(false); // TODO : **** I THINK THAT WITH SOME BAD TIMING THIS IS A CRITICAL PROBLEM *****
+         // TODO : **** I THINK THAT WITH SOME BAD TIMING THIS IS A CRITICAL PROBLEM *****
     }
 
     protected void publishVote(String playerId) {
@@ -176,6 +176,12 @@ abstract public class Session implements Runnable {
     protected void checkForReadyState() {
         if(((MainActivity) mPlayersManager.getActivity()).isReady()) { // TODO : Bad design (cast)
             setState(SessionState.READY);
+        }
+    }
+
+    protected void postAnswersLocally(List<Message> messages) {
+        for(int i = 0; i < messages.size(); i++) {
+            mPlayersManager.processAnswer(messages.get(i));
         }
     }
 

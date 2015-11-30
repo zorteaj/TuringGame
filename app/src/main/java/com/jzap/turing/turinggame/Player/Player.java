@@ -103,9 +103,6 @@ public class Player implements Serializable {
 
     private void addSelfToPlayersManager() {
         mPlayerHandler.obtainMessage(MessageTypes.CONTROL_ADD_PLAYER).sendToTarget();
-
-        /*mPlayerView = new PlayerView(mPlayersManager.getActivity(), mId);
-        mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);*/ // TODO : Does this have something to do with the flickering on begin game/incoming question?
     }
 
     public String getId() {
@@ -114,6 +111,7 @@ public class Player implements Serializable {
 
     public void setId(String id) {
         mId = id;
+        mPlayerView.setPlayerId(mId); // TODO : This seems to be a lot of indirection
     }
 
     public String getName() {
@@ -148,5 +146,9 @@ public class Player implements Serializable {
             mPlayerHandler.obtainMessage(MessageTypes.INFO_THIS_PLAYER_SCORED, mPoints).sendToTarget();
         }
     }
+
+/*    protected void postAnswerLocally() {
+        mPlayersManager.processAnswer(mAnswerMessage);
+    }*/
 
 }

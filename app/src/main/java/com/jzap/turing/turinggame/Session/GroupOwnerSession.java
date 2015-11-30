@@ -70,6 +70,7 @@ public class GroupOwnerSession extends Session {
                     break;
                 case WAITING_FOR_VOTES:
                     //Log.i(mTag, "WAITING_FOR_VOTES");
+                    enableVoting(false);
                     listenForAndProcessVotes();
                     Log.i(mTag, "Setting to cold");
                     setState(SessionState.READY);
@@ -107,8 +108,6 @@ public class GroupOwnerSession extends Session {
 
     @Override
     protected void answerQuestion() {
-
-        // TODO AI
         if(mAiPlayer == null) {
             return;
         }
@@ -122,9 +121,9 @@ public class GroupOwnerSession extends Session {
         answerMessages.add(aiAnswerMessage);
 
         Log.i(mTag, "Sending answer: " + mAnswer);
+        postAnswersLocally(answerMessages);
         sendMessages(answerMessages);
         setState(SessionState.ANSWERED);
-
     }
 
     @Override
