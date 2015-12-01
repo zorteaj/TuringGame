@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -64,17 +66,6 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-       // Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-       // setSupportActionBar(toolbar);
-
-  /*      FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         init();
         startPeerDiscovery();
@@ -278,8 +269,20 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     public void submitAnswerClicked(View v) {
         Log.i(mTag, "Submit Answer Button Clicked");
-        if(mSession != null) {
+        if(mSession != null && mAnswer_EditText != null) {
             mSession.setAnswer(mAnswer_EditText.getText().toString());
+            mAnswer_EditText.setText("");
+        }
+        hideSoftKeyboard();
+        mPlayersManager.hideNames();
+        // Check if no view has focus:
+    }
+
+    private void hideSoftKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 

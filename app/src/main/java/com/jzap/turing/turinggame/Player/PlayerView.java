@@ -1,26 +1,30 @@
 package com.jzap.turing.turinggame.Player;
 
+import android.annotation.TargetApi;
 import android.content.Context;
-import android.net.wifi.p2p.WifiP2pDevice;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.jzap.turing.turinggame.R;
 import com.jzap.turing.turinggame.UI.MainActivity;
 
 /**
  * Created by JZ_W541 on 11/25/2015.
  */
+@TargetApi(16)
 public class PlayerView extends LinearLayout {
 
     private static final String mTag = "PlayerView";
 
-    //private WifiP2pDevice mDevice = null;
     private String mPlayerId;
     private String mPlayerName;
-    private TextView mDeviceName_TextView;
+    private TextView mPlayerName_TextView;
     private TextView mAnswer_TextView;
     private TextView mPoints_TextView;
     private ViewGroup.LayoutParams mLayoutParams;
@@ -31,20 +35,25 @@ public class PlayerView extends LinearLayout {
     public PlayerView(Context context, String playerId, String playerName) {
         super(context);
 
+        Log.i(mTag, "Constructing Player view");
+
         mPlayerId = playerId;
         mPlayerName = playerName;
-        mDeviceName_TextView = new TextView(context);
+        mPlayerName_TextView = new TextView(context);
         mAnswer_TextView = new TextView(context);
         mPoints_TextView = new TextView(context);
 
         mLayoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-       // mDeviceName_TextView.setText(mPlayerId);
-        mDeviceName_TextView.setText(mPlayerName); // TODO : If continued to use this way, change name (it's not device name, it's player name)
+        mPlayerName_TextView.setText(mPlayerName);
 
-        mDeviceName_TextView.setLayoutParams(mLayoutParams);
+        mPlayerName_TextView.setLayoutParams(mLayoutParams);
+        mPlayerName_TextView.setTextColor(Color.BLACK);
         mAnswer_TextView.setLayoutParams(mLayoutParams);
         mPoints_TextView.setLayoutParams(mLayoutParams);
+
+        setAnswer("");
+        setPoints(0);
 
         mActivity = (MainActivity) context; // TODO : Test
 
@@ -56,13 +65,18 @@ public class PlayerView extends LinearLayout {
 
     private void createView() {
         configureView();
-        this.addView(mDeviceName_TextView);
+        this.addView(mPlayerName_TextView);
         this.addView(mAnswer_TextView);
         this.addView(mPoints_TextView);
     }
 
     private void configureView() {
-        this.setBackgroundColor(0xf0d2f4); // TODO : UI Update
+        final int sdk = android.os.Build.VERSION.SDK_INT;
+        if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            this.setBackgroundDrawable(ContextCompat.getDrawable(mActivity, R.drawable.player_border_disabled));
+        } else {
+            this.setBackground(ContextCompat.getDrawable(mActivity, R.drawable.player_border_disabled));
+        }
         this.setOrientation(VERTICAL);
         this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
@@ -73,7 +87,7 @@ public class PlayerView extends LinearLayout {
 
     public void setName(String name) {
         mPlayerName = name;
-        mDeviceName_TextView.setText(mPlayerName);
+        mPlayerName_TextView.setText(mPlayerName);
     }
 
     public void setPlayerId(String id) {
@@ -93,7 +107,27 @@ public class PlayerView extends LinearLayout {
             public void onClick(View v) {
                 mActivity.getSession().castVote(mPlayerId);
                 mActivity.getPlayersManager().revealNames();
+                //mActivity.getPlayersManager().hideNames();
             }
         });
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        final int sdk = android.os.Build.VERSION.SDK_INT;
+
+        Drawable background;
+
+        if(enabled) {
+            background = ContextCompat.getDrawable(mActivity, R.drawable.player_border_enabled);
+        } else {
+            background = ContextCompat.getDrawable(mActivity, R.drawable.player_border_disabled);
+        }
+
+        if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            this.setBackgroundDrawable(background);
+        } else {
+            this.setBackground(background);
+        }
     }
 }

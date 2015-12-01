@@ -100,13 +100,9 @@ public class PlayersManager {
 
     public void enableVoting(boolean enable) {
         Log.i(mTag, "Enable = " + String.valueOf(enable));
-        int color = Color.RED;
-        if(enable) {
-            color = Color.GREEN;
-        }
         for(int i = 0; i < mPlayersList.size(); i++) {
             mPlayersList.get(i).getPlayerView().setClickable(enable);
-            mPlayersList.get(i).getPlayerView().setBackgroundColor(color);
+            mPlayersList.get(i).getPlayerView().setEnabled(enable);
         }
     }
 
