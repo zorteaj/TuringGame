@@ -115,7 +115,7 @@ abstract public class Session implements Runnable {
         if(vote.equals(mAiPlayer.getId())) {
             mPlayersManager.findPlayerById(voter).addPoint();
         } else {
-            // TODO : Do something else
+            mPlayersManager.findPlayerById(voter).guessedWrong();
         }
     }
 

@@ -19,4 +19,5 @@ public class MessageTypes {
     // Info
     public static final int INFO_POINT_SCORED = 10;
     public static final int INFO_THIS_PLAYER_SCORED = 11;
+    public static final int INFO_THIS_PLAYER_DID_NOT_SCORE = 12;
 }

@@ -80,18 +80,22 @@ public class Player implements Serializable {
             mPlayer = player;
         }
 
+        // TODO : Make switch statement
         @Override
         public void handleMessage(android.os.Message message) {
             if (message.what == MessageTypes.CONTENT_ANSWER) {
                 mPlayer.getPlayerView().setAnswer((String) message.obj);
-            } else if(message.what == MessageTypes.CONTROL_ADD_PLAYER) {
+            } else if (message.what == MessageTypes.CONTROL_ADD_PLAYER) {
                 mPlayerView = new PlayerView(mPlayersManager.getActivity(), mId, mName);
                 mPlayersManager.getPlayersList().add(mPlayer);
                 mPlayersManager.getPlayersLinearLayout().addView(mPlayerView);
-            } else if(message.what == MessageTypes.INFO_THIS_PLAYER_SCORED) {
-                Toast.makeText(mPlayersManager.getActivity(), "Point Scored! Total: " + (Integer) message.obj,
+            } else if (message.what == MessageTypes.INFO_THIS_PLAYER_SCORED) {
+                Toast.makeText(mPlayersManager.getActivity(), "Correct! You now have " + (Integer) message.obj + " points!",
                         Toast.LENGTH_LONG).show();
-            } else if (message.what == MessageTypes.INFO_POINT_SCORED) {
+            } else if(message.what == MessageTypes.INFO_THIS_PLAYER_DID_NOT_SCORE) {
+                Toast.makeText(mPlayersManager.getActivity(), "Wrong!",
+                        Toast.LENGTH_LONG).show();
+             }else if (message.what == MessageTypes.INFO_POINT_SCORED) {
                 mPlayer.getPlayerView().setPoints((Integer) message.obj);
             } else if(message.what == MessageTypes.CONTROL_REVEAL_NAME) {
                 mPlayer.getPlayerView().setName((String) message.obj);
@@ -144,6 +148,12 @@ public class Player implements Serializable {
         // If this player (who scored the point) is the player on this device, send a toast on this device
         if(this == mPlayersManager.getThisPlayer()) {
             mPlayerHandler.obtainMessage(MessageTypes.INFO_THIS_PLAYER_SCORED, mPoints).sendToTarget();
+        }
+    }
+
+    public void guessedWrong() {
+        if(this == mPlayersManager.getThisPlayer()) {
+            mPlayerHandler.obtainMessage(MessageTypes.INFO_THIS_PLAYER_DID_NOT_SCORE).sendToTarget();
         }
     }
 
