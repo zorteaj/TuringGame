@@ -122,10 +122,12 @@ public class ClientSession extends Session {
     private void listenForAndProcessQuestion() { // TODO : Commonize these listenForAndProcess methods
         Log.i(mTag, "listening for a processing question");
         try {
-            Message questionMessage = (Message) mIn.readObject();
-            if(questionMessage.getType() == Message.Type.QUESTION) {
-                processQuestion(questionMessage.getBody());
-            } else {
+            if(mIn != null) {
+                Message questionMessage = (Message) mIn.readObject();
+                if (questionMessage.getType() == Message.Type.QUESTION) {
+                    processQuestion(questionMessage.getBody());
+                } else {
+                }
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
