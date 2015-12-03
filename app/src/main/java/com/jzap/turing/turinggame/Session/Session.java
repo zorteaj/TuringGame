@@ -5,8 +5,9 @@ import android.util.Log;
 
 import com.jzap.turing.turinggame.Message.Message;
 import com.jzap.turing.turinggame.Message.MessageTypes;
-import com.jzap.turing.turinggame.Player.PlayersManager;
 import com.jzap.turing.turinggame.Player.AiPlayer;
+import com.jzap.turing.turinggame.Player.PlayersManager;
+import com.jzap.turing.turinggame.Player.DumbAiPlayer;
 import com.jzap.turing.turinggame.UI.MainActivity;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ abstract public class Session implements Runnable {
     protected Session(PlayersManager manager, Handler handler) {
         mPlayersManager = manager;
         mHandler = handler;
-        mAiPlayer = new AiPlayer(mPlayersManager);
+        mAiPlayer = new DumbAiPlayer(mPlayersManager);
         mSessionState = SessionState.COLD; // TODO : Use this?
     }
 

@@ -99,7 +99,8 @@ public class Player implements Serializable {
                 mPlayer.getPlayerView().setPoints((Integer) message.obj);
             } else if(message.what == MessageTypes.CONTROL_REVEAL_NAME) {
                 mPlayer.getPlayerView().setName((String) message.obj);
-            } else if(message.what == MessageTypes.CONTROL_HIDE_NAME) {
+                mPlayer.getPlayerView().setPoints(mPoints); // TODO : Change name for all
+            } else if(message.what == MessageTypes.CONTROL_HIDE_NAME) { // TODO : Change name for all
                 mPlayer.getPlayerView().setName("?");
                 mPlayer.getPlayerView().setAnswer("");
                 mPlayer.getPlayerView().hidePoints();

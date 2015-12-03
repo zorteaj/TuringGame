@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.jzap.turing.turinggame.Message.Message;
 import com.jzap.turing.turinggame.Message.MessageTypes;
+import com.jzap.turing.turinggame.NLP.DumbQuestionGenerator;
 import com.jzap.turing.turinggame.NLP.QuestionGenerator;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 
@@ -29,7 +30,7 @@ public class GroupOwnerSession extends Session {
 
     public GroupOwnerSession(PlayersManager playersManager, Handler handler) {
         super(playersManager, handler); // TODO : Only for test
-        mQuestionGenerator = new QuestionGenerator();
+        mQuestionGenerator = new DumbQuestionGenerator();
     }
 
     @Override
