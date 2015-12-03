@@ -11,6 +11,7 @@ import com.jzap.turing.turinggame.UI.MainActivity;
 import com.jzap.turing.turinggame.Message.Message;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -109,6 +110,25 @@ public class PlayersManager {
     public void revealNames() {
         for(int i = 0; i < mPlayersList.size(); i++) {
             mPlayersList.get(i).revealName();
+        }
+    }
+
+    public void shufflePlayersAndHideNames() {
+        shufflePlayers();
+        annonymizePlayers();
+    }
+
+    public void shufflePlayers() {
+        mPlayers_LinearLayout.removeAllViews();
+        Collections.shuffle(mPlayersList);
+        for(int i = 0; i < mPlayersList.size() ; i++) {
+            mPlayers_LinearLayout.addView(mPlayersList.get(i).getPlayerView());
+        }
+    }
+
+    public void annonymizePlayers() {
+        for(int i = 0; i < mPlayersList.size(); i++) {
+            mPlayersList.get(i).annonymize();
         }
     }
 

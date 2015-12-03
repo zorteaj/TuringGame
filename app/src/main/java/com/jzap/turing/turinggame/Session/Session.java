@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -179,10 +180,21 @@ abstract public class Session implements Runnable {
         }
     }
 
-    protected void postAnswersLocally(List<Message> messages) {
+   /* protected void postAnswersLocally(List<Message> messages) {
         for(int i = 0; i < messages.size(); i++) {
             mPlayersManager.processAnswer(messages.get(i));
         }
+    }*/
+
+    protected void postAnswersLocally() {
+        //List<Message> answerMessages = new ArrayList<>();
+        Message thisPlayersAnswerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
+        //answerMessages.add(answerMessage);
+        mPlayersManager.processAnswer((thisPlayersAnswerMessage));
+        /*for(int i = 0; i < messages.size(); i++) {
+            mPlayersManager.processAnswer(messages.get(i));
+        }*/
+        //postAnswersLocally(answerMessages);
     }
 
 }

@@ -64,6 +64,7 @@ public class ClientSession extends Session {
                 case ANSWERED:
                     //Log.i(mTag, "ANSWERED");
                     listenForAndProcessAnswers();
+                    postAnswersLocally();
                     break;
                 case VOTING:
                     //Log.i(mTag, "VOTING");
@@ -109,7 +110,7 @@ public class ClientSession extends Session {
         Message answerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
         answerMessages.add(answerMessage);
         Log.i(mTag, "Sending answer: " + mAnswer);
-        postAnswersLocally(answerMessages);
+        //postAnswersLocally(answerMessages);
         sendMessages(answerMessages);
         setState(SessionState.ANSWERED);
     }

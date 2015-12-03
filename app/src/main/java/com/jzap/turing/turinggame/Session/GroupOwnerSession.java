@@ -62,6 +62,7 @@ public class GroupOwnerSession extends Session {
                 case ANSWERED:
                     //Log.i(mTag, "ANSWERED");
                     listenForAndProcessAnswers();
+                    postAnswersLocally();
                 case VOTING:
                    // Log.i(mTag, "VOTING");
                     if(!mVotingEnabled) {
@@ -121,7 +122,7 @@ public class GroupOwnerSession extends Session {
         answerMessages.add(aiAnswerMessage);
 
         Log.i(mTag, "Sending answer: " + mAnswer);
-        postAnswersLocally(answerMessages);
+       // postAnswersLocally(answerMessages);
         sendMessages(answerMessages);
         setState(SessionState.ANSWERED);
     }

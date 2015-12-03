@@ -269,12 +269,15 @@ public class MainActivity extends AppCompatActivity implements PeerDisplayActivi
 
     public void submitAnswerClicked(View v) {
         Log.i(mTag, "Submit Answer Button Clicked");
+        if(mPlayersManager != null) {
+            mPlayersManager.shufflePlayersAndHideNames();
+        }
         if(mSession != null && mAnswer_EditText != null) {
             mSession.setAnswer(mAnswer_EditText.getText().toString());
             mAnswer_EditText.setText("");
         }
         hideSoftKeyboard();
-        mPlayersManager.hideNames();
+
         // Check if no view has focus:
     }
 

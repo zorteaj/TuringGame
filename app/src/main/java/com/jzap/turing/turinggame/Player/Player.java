@@ -101,6 +101,8 @@ public class Player implements Serializable {
                 mPlayer.getPlayerView().setName((String) message.obj);
             } else if(message.what == MessageTypes.CONTROL_HIDE_NAME) {
                 mPlayer.getPlayerView().setName("?");
+                mPlayer.getPlayerView().setAnswer("");
+                mPlayer.getPlayerView().hidePoints();
             }
         }
     }
@@ -132,6 +134,10 @@ public class Player implements Serializable {
 
     public void hideName() {
         mPlayerHandler.obtainMessage(MessageTypes.CONTROL_HIDE_NAME, mName).sendToTarget();
+    }
+
+    public void annonymize() {
+        mPlayerHandler.obtainMessage(MessageTypes.CONTROL_HIDE_NAME, mName).sendToTarget(); // TODO : Rename message to annonymize
     }
 
     public void setAnswer(String answer) {

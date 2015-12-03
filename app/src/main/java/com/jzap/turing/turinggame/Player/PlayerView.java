@@ -99,6 +99,11 @@ public class PlayerView extends LinearLayout {
         mPoints_TextView.setText("Points: " + String.valueOf(points)); // TODO : There are nicer ways to do this
     }
 
+    public void hidePoints() {
+        mPoints_TextView.setText("Points:"); // TODO : There are nicer ways to do this
+    }
+
+
     public void setUpOnClickListener() {
         setOnClickListener(new View.OnClickListener() {
 
