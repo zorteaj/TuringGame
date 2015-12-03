@@ -37,7 +37,6 @@ public class PlayersManager {
     // TODO : If user clicks set peers in the middle of the game, it will update the list and blank out answers.  Should probably disable this manually and automatically (in case
     // a new person tries to join - might mess things ups
     public void setPeers(List peers) {
-        //mPlayers_LinearLayout.removeAllViews();
         clearPlayersListExceptThis();
         for(int i = 0; i < peers.size(); i++) {
             new Player((WifiP2pDevice) peers.get(i), this);

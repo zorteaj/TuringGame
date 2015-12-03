@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +24,7 @@ abstract public class Session implements Runnable {
 
     protected static final int mPort = 8886; // TODO : Is this number okay?
 
-    protected enum SessionState {COLD, READY, WAITING_FOR_QUESTION, ANSWERING, SENDING_ANSWER, ANSWERED, VOTING, WAITING_FOR_VOTES, TERMINATE} // TODO : Keep an eye on whether these get used
+    protected enum SessionState {COLD, READY, WAITING_FOR_QUESTION, ANSWERING, SENDING_ANSWER, ANSWERED, VOTING, WAITING_FOR_VOTES, TERMINATE}
     protected SessionState mSessionState;
 
     protected PlayersManager mPlayersManager;
@@ -58,7 +57,7 @@ abstract public class Session implements Runnable {
         setState(SessionState.SENDING_ANSWER);
     }
 
-    protected void listenForAndProcessAnswers() { // TODO : Make this a list of answers for multiple peers case // TODO : TEST
+    protected void listenForAndProcessAnswers() {
         Log.i(mTag, "Listening for and processing answers");
         try {
             List<Message> answersMessages = (List<Message>) mIn.readObject();
@@ -67,7 +66,6 @@ abstract public class Session implements Runnable {
                 if (answersMessages.get(i).getType() == Message.Type.ANSWER) {
                     Log.i(mTag, "Answer = " + answersMessages.get(i).getBody());
                     mPlayersManager.processAnswer(answersMessages.get(i));
-                    //processAnswers(answersMessage.getBody()); // TODO : Handle else
                 } else {
                     Log.i(mTag, "Not answer type");
                 }
@@ -83,13 +81,12 @@ abstract public class Session implements Runnable {
     }
 
     public void castVote(String playerId) {
-        Log.i(mTag, "Voted for " + playerId); // TODO : Actually send this
+        Log.i(mTag, "Voted for " + playerId);
         // Process the vote from this player locally
         processVote(mPlayersManager.getThisPlayer().getId(), playerId);
         // Publish the vote from this player onto the network
         publishVote(playerId);
         setState(SessionState.WAITING_FOR_VOTES);
-         // TODO : **** I THINK THAT WITH SOME BAD TIMING THIS IS A CRITICAL PROBLEM *****
     }
 
     protected void publishVote(String playerId) {
@@ -180,21 +177,9 @@ abstract public class Session implements Runnable {
         }
     }
 
-   /* protected void postAnswersLocally(List<Message> messages) {
-        for(int i = 0; i < messages.size(); i++) {
-            mPlayersManager.processAnswer(messages.get(i));
-        }
-    }*/
-
     protected void postAnswersLocally() {
-        //List<Message> answerMessages = new ArrayList<>();
         Message thisPlayersAnswerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
-        //answerMessages.add(answerMessage);
         mPlayersManager.processAnswer((thisPlayersAnswerMessage));
-        /*for(int i = 0; i < messages.size(); i++) {
-            mPlayersManager.processAnswer(messages.get(i));
-        }*/
-        //postAnswersLocally(answerMessages);
     }
 
 }

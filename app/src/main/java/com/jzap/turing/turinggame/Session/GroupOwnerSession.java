@@ -121,8 +121,6 @@ public class GroupOwnerSession extends Session {
         answerMessages.add(playerAnswerMessage);
         answerMessages.add(aiAnswerMessage);
 
-        Log.i(mTag, "Sending answer: " + mAnswer);
-       // postAnswersLocally(answerMessages);
         sendMessages(answerMessages);
         setState(SessionState.ANSWERED);
     }

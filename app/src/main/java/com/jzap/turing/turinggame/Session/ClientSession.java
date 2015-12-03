@@ -109,8 +109,7 @@ public class ClientSession extends Session {
         List<Message> answerMessages = new ArrayList<>();
         Message answerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
         answerMessages.add(answerMessage);
-        Log.i(mTag, "Sending answer: " + mAnswer);
-        //postAnswersLocally(answerMessages);
+
         sendMessages(answerMessages);
         setState(SessionState.ANSWERED);
     }
