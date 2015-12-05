@@ -3,8 +3,8 @@ package com.jzap.turing.turinggame.Session;
 import android.os.Handler;
 import android.util.Log;
 
-import com.jzap.turing.turinggame.Message.Message;
-import com.jzap.turing.turinggame.Message.MessageTypes;
+import com.jzap.turing.turinggame.Message.SessionMessage;
+import com.jzap.turing.turinggame.Message.SessionMessageTypes;
 import com.jzap.turing.turinggame.Player.AiPlayer;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 import com.jzap.turing.turinggame.Player.DumbAiPlayer;
@@ -61,12 +61,12 @@ abstract public class Session implements Runnable {
     protected void listenForAndProcessAnswers() {
         Log.i(mTag, "Listening for and processing answers");
         try {
-            List<Message> answersMessages = (List<Message>) mIn.readObject();
+            List<SessionMessage> answersSessionMessages = (List<SessionMessage>) mIn.readObject();
 
-            for(int i = 0; i < answersMessages.size(); i++) {
-                if (answersMessages.get(i).getType() == Message.Type.ANSWER) {
-                    Log.i(mTag, "Answer = " + answersMessages.get(i).getBody());
-                    mPlayersManager.processAnswer(answersMessages.get(i));
+            for(int i = 0; i < answersSessionMessages.size(); i++) {
+                if (answersSessionMessages.get(i).getType() == SessionMessage.Type.ANSWER) {
+                    Log.i(mTag, "Answer = " + answersSessionMessages.get(i).getBody());
+                    mPlayersManager.processAnswer(answersSessionMessages.get(i));
                 } else {
                     Log.i(mTag, "Not answer type");
                 }
@@ -91,16 +91,16 @@ abstract public class Session implements Runnable {
     }
 
     protected void publishVote(String playerId) {
-        Message voteMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.VOTE, playerId);
-        sendMessage(voteMessage);
+        SessionMessage voteSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.VOTE, playerId);
+        sendMessage(voteSessionMessage);
     }
 
     protected void listenForAndProcessVotes() {
         try {
-            Message voteMessage = (Message) mIn.readObject();
+            SessionMessage voteSessionMessage = (SessionMessage) mIn.readObject();
 
-            if(voteMessage.getType() == Message.Type.VOTE) {
-                processVote(voteMessage.getPlayerId(), voteMessage.getBody());
+            if(voteSessionMessage.getType() == SessionMessage.Type.VOTE) {
+                processVote(voteSessionMessage.getPlayerId(), voteSessionMessage.getBody());
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -118,20 +118,20 @@ abstract public class Session implements Runnable {
         }
     }
 
-    protected void sendMessage(Message message) {
+    protected void sendMessage(SessionMessage sessionMessage) {
         try {
             if(mOut != null) {
-                mOut.writeObject(message);
+                mOut.writeObject(sessionMessage);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    protected void sendMessages(List<Message> messages) {
+    protected void sendMessages(List<SessionMessage> sessionMessages) {
         try {
             if(mOut != null) {
-                mOut.writeObject(messages);
+                mOut.writeObject(sessionMessages);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -154,20 +154,20 @@ abstract public class Session implements Runnable {
 
     protected void enableAnswering(boolean enable) {
         if(enable) {
-            mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
+            mHandler.obtainMessage(SessionMessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
             mAnsweringEnabled = true;
         } else {
-            mHandler.obtainMessage(MessageTypes.CONTROL_DISABLE_ANSWER_BUTTON).sendToTarget();
+            mHandler.obtainMessage(SessionMessageTypes.CONTROL_DISABLE_ANSWER_BUTTON).sendToTarget();
             mAnsweringEnabled = false;
         }
     }
 
     protected void enableVoting(boolean enable) {
         if(enable) {
-            mHandler.obtainMessage(MessageTypes.CONTROL_ENABLE_VOTING).sendToTarget();
+            mHandler.obtainMessage(SessionMessageTypes.CONTROL_ENABLE_VOTING).sendToTarget();
             mVotingEnabled = true;
         } else {
-            mHandler.obtainMessage(MessageTypes.CONTROL_DISABLE_VOTING).sendToTarget();
+            mHandler.obtainMessage(SessionMessageTypes.CONTROL_DISABLE_VOTING).sendToTarget();
             mVotingEnabled = false;
         }
     }
@@ -179,8 +179,8 @@ abstract public class Session implements Runnable {
     }
 
     protected void postAnswersLocally() {
-        Message thisPlayersAnswerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
-        mPlayersManager.processAnswer((thisPlayersAnswerMessage));
+        SessionMessage thisPlayersAnswerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
+        mPlayersManager.processAnswer((thisPlayersAnswerSessionMessage));
     }
 
 }

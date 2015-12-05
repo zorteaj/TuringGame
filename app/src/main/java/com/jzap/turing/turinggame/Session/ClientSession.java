@@ -2,8 +2,8 @@ package com.jzap.turing.turinggame.Session;
 
 import android.util.Log;
 
-import com.jzap.turing.turinggame.Message.Message;
-import com.jzap.turing.turinggame.Message.MessageTypes;
+import com.jzap.turing.turinggame.Message.SessionMessage;
+import com.jzap.turing.turinggame.Message.SessionMessageTypes;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 
 import java.io.IOException;
@@ -106,16 +106,16 @@ public class ClientSession extends Session {
 
     @Override
     protected void answerQuestion() {
-        List<Message> answerMessages = new ArrayList<>();
-        Message answerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
-        answerMessages.add(answerMessage);
+        List<SessionMessage> answerSessionMessages = new ArrayList<>();
+        SessionMessage answerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.ANSWER, mAnswer); // TODO : Consider making answerSessionMessages a member, putting the main code in interface
+        answerSessionMessages.add(answerSessionMessage);
 
-        sendMessages(answerMessages);
+        sendMessages(answerSessionMessages);
         setState(SessionState.ANSWERED);
     }
 
     private void processQuestion(String question) {
-        mHandler.obtainMessage(MessageTypes.CONTENT_QUESTION, question).sendToTarget();
+        mHandler.obtainMessage(SessionMessageTypes.CONTENT_QUESTION, question).sendToTarget();
         setState(SessionState.ANSWERING);
     }
 
@@ -123,9 +123,9 @@ public class ClientSession extends Session {
         Log.i(mTag, "listening for a processing question");
         try {
             if(mIn != null) {
-                Message questionMessage = (Message) mIn.readObject();
-                if (questionMessage.getType() == Message.Type.QUESTION) {
-                    processQuestion(questionMessage.getBody());
+                SessionMessage questionSessionMessage = (SessionMessage) mIn.readObject();
+                if (questionSessionMessage.getType() == SessionMessage.Type.QUESTION) {
+                    processQuestion(questionSessionMessage.getBody());
                 } else {
                 }
             }
@@ -137,8 +137,8 @@ public class ClientSession extends Session {
     }
 
     private void requestQuestion() {
-        Message questionRequestMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.QUESTION_REQUEST, "");
-        sendMessage(questionRequestMessage);
+        SessionMessage questionRequestSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.QUESTION_REQUEST, "");
+        sendMessage(questionRequestSessionMessage);
         setState(SessionState.WAITING_FOR_QUESTION);
     }
 

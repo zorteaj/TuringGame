@@ -3,7 +3,7 @@ package com.jzap.turing.turinggame.Message;
 /**
  * Created by JZ_W541 on 11/25/2015.
  */
-public class MessageTypes {
+public class SessionMessageTypes {
     // Content
     public static final int CONTENT_QUESTION = 0;
     public static final int CONTENT_ANSWER = 1;

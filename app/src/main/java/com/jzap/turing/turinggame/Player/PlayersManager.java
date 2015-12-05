@@ -1,6 +1,5 @@
 package com.jzap.turing.turinggame.Player;
 
-import android.graphics.Color;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.support.v7.app.AppCompatActivity;
 
@@ -8,7 +7,7 @@ import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.jzap.turing.turinggame.UI.MainActivity;
-import com.jzap.turing.turinggame.Message.Message;
+import com.jzap.turing.turinggame.Message.SessionMessage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,8 +33,6 @@ public class PlayersManager {
         mPlayers_LinearLayout = ((MainActivity) mActivity).getPlayersLinearLayout(); // TODO : This can't be good design
     }
 
-    // TODO : If user clicks set peers in the middle of the game, it will update the list and blank out answers.  Should probably disable this manually and automatically (in case
-    // a new person tries to join - might mess things ups
     public void setPeers(List peers) {
         clearPlayersListExceptThis();
         for(int i = 0; i < peers.size(); i++) {
@@ -63,12 +60,11 @@ public class PlayersManager {
         return mPlayers_LinearLayout;
     }
 
-    public void processAnswer(Message message) {
-        Log.i(mTag, "Answer = " + message.getBody());
+    public void processAnswer(SessionMessage sessionMessage) {
         Player player = null;
-        if ((player = findPlayerById(message.getPlayerId())) != null) {
-            player.setName(message.getPlayerName());
-            player.setAnswer(message.getBody());
+        if ((player = findPlayerById(sessionMessage.getPlayerId())) != null) {
+            player.setName(sessionMessage.getPlayerName());
+            player.setAnswer(sessionMessage.getBody());
         } else {
             // TODO : Add player??
             Log.i(mTag, "Add failed");
@@ -76,7 +72,6 @@ public class PlayersManager {
     }
 
     public void setThisPlayer(Player player) {
-        Log.i(mTag, "This player is set");
         mThisPlayer = player;
     }
 
@@ -99,7 +94,6 @@ public class PlayersManager {
     }
 
     public void enableVoting(boolean enable) {
-        Log.i(mTag, "Enable = " + String.valueOf(enable));
         for(int i = 0; i < mPlayersList.size(); i++) {
             mPlayersList.get(i).getPlayerView().setClickable(enable);
             mPlayersList.get(i).getPlayerView().setEnabled(enable);
@@ -128,12 +122,6 @@ public class PlayersManager {
     public void annonymizePlayers() {
         for(int i = 0; i < mPlayersList.size(); i++) {
             mPlayersList.get(i).annonymize();
-        }
-    }
-
-    public void hideNames() {
-        for(int i = 0; i < mPlayersList.size(); i++) {
-            mPlayersList.get(i).hideName();
         }
     }
 }

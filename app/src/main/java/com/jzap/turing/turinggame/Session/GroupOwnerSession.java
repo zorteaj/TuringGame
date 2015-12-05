@@ -3,8 +3,8 @@ package com.jzap.turing.turinggame.Session;
 import android.os.Handler;
 import android.util.Log;
 
-import com.jzap.turing.turinggame.Message.Message;
-import com.jzap.turing.turinggame.Message.MessageTypes;
+import com.jzap.turing.turinggame.Message.SessionMessage;
+import com.jzap.turing.turinggame.Message.SessionMessageTypes;
 import com.jzap.turing.turinggame.NLP.DumbQuestionGenerator;
 import com.jzap.turing.turinggame.NLP.QuestionGenerator;
 import com.jzap.turing.turinggame.Player.PlayersManager;
@@ -114,15 +114,15 @@ public class GroupOwnerSession extends Session {
             return;
         }
 
-        List<Message> answerMessages = new ArrayList<>();
+        List<SessionMessage> answerSessionMessages = new ArrayList<>();
 
-        Message playerAnswerMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.ANSWER, mAnswer);
-        Message aiAnswerMessage = mAiPlayer.answerQuestion();
+        SessionMessage playerAnswerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.ANSWER, mAnswer);
+        SessionMessage aiAnswerSessionMessage = mAiPlayer.answerQuestion();
 
-        answerMessages.add(playerAnswerMessage);
-        answerMessages.add(aiAnswerMessage);
+        answerSessionMessages.add(playerAnswerSessionMessage);
+        answerSessionMessages.add(aiAnswerSessionMessage);
 
-        sendMessages(answerMessages);
+        sendMessages(answerSessionMessages);
         setState(SessionState.ANSWERED);
     }
 
@@ -135,12 +135,12 @@ public class GroupOwnerSession extends Session {
     }
 
     private void listenForAndProcessQuestionRequest() {
-        Message questionMessage = null;
+        SessionMessage questionSessionMessage = null;
 
         if (mIn != null) {
             try {
-                questionMessage = (Message) mIn.readObject();
-                if (questionMessage.getType() == Message.Type.QUESTION_REQUEST) {
+                questionSessionMessage = (SessionMessage) mIn.readObject();
+                if (questionSessionMessage.getType() == SessionMessage.Type.QUESTION_REQUEST) {
                     processQuestionRequest();
                 }
             } catch (ClassNotFoundException e) {
@@ -162,11 +162,11 @@ public class GroupOwnerSession extends Session {
 
     private void publishQuestion(String question) {
         // Display on this device
-        mHandler.obtainMessage(MessageTypes.CONTENT_QUESTION, question).sendToTarget();
+        mHandler.obtainMessage(SessionMessageTypes.CONTENT_QUESTION, question).sendToTarget();
 
-        // Create question Message and publish to peer device(s)
-        Message questionMessage = new Message(mPlayersManager.getThisPlayer(), Message.Type.QUESTION, question);
-        sendMessage(questionMessage);
+        // Create question SessionMessage and publish to peer device(s)
+        SessionMessage questionSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.QUESTION, question);
+        sendMessage(questionSessionMessage);
 
         setState(SessionState.ANSWERING);
     }

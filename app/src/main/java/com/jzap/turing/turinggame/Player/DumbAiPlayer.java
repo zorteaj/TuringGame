@@ -1,6 +1,6 @@
 package com.jzap.turing.turinggame.Player;
 
-import com.jzap.turing.turinggame.Message.Message;
+import com.jzap.turing.turinggame.Message.SessionMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +20,13 @@ public class DumbAiPlayer extends AiPlayer {
         hideName();
     }
 
-    public Message answerQuestion() {
-        mAnswerMessage = new Message(this, Message.Type.ANSWER, calculateAnswer());
-        return mAnswerMessage;
+    public SessionMessage answerQuestion() {
+        mAnswerSessionMessage = new SessionMessage(this, SessionMessage.Type.ANSWER, calculateAnswer());
+        return mAnswerSessionMessage;
     }
 
     public void postAnswerLocally() {
-        mPlayersManager.processAnswer(mAnswerMessage);
+        mPlayersManager.processAnswer(mAnswerSessionMessage);
     }
 
     private String calculateAnswer() {
