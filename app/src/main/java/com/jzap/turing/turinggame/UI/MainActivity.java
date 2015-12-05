@@ -200,7 +200,6 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
     }
 
     public void discoverPeersClicked(View v) {
-        Log.i(mTag, "Discover Peers Button Clicked");
         if(mDiscoverPeers_ProgressBar == null) {
            mDiscoverPeers_ProgressBar = new ProgressBar(this);
             mMain_LinearLayout.addView(mDiscoverPeers_ProgressBar);
