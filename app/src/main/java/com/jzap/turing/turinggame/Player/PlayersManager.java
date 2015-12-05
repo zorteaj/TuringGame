@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 
 import com.jzap.turing.turinggame.UI.MainActivity;
 import com.jzap.turing.turinggame.Message.SessionMessage;
+import com.jzap.turing.turinggame.UI.PlayersUIActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,20 +24,20 @@ public class PlayersManager {
 
     // This device's player
     private Player mThisPlayer = null;
-    private AppCompatActivity mActivity;
+    private PlayersUIActivity mActivity;
     private List<Player> mPlayersList;
     private LinearLayout mPlayers_LinearLayout;
 
-    public PlayersManager(AppCompatActivity activity) {
+    public PlayersManager(PlayersUIActivity activity) {
         mActivity = activity;
         mPlayersList = new ArrayList();
-        mPlayers_LinearLayout = ((MainActivity) mActivity).getPlayersLinearLayout(); // TODO : This can't be good design
+        mPlayers_LinearLayout = mActivity.getPlayersLinearLayout();
     }
 
     public void setPeers(List peers) {
         clearPlayersListExceptThis();
         for(int i = 0; i < peers.size(); i++) {
-            new Player((WifiP2pDevice) peers.get(i), this);
+            new Player(this, (WifiP2pDevice) peers.get(i));
         }
     }
 
@@ -52,7 +53,7 @@ public class PlayersManager {
         }
     }
 
-    public AppCompatActivity getActivity() {
+    public PlayersUIActivity getActivity() {
         return mActivity;
     }
 

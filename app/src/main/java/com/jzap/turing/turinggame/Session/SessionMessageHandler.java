@@ -4,24 +4,24 @@ package com.jzap.turing.turinggame.Session;
 import android.os.Handler;
 import android.util.Log;
 
-import com.jzap.turing.turinggame.Message.SessionMessageTypes;
+import com.jzap.turing.turinggame.Message.LocalSessionMessageTypes;
 import com.jzap.turing.turinggame.UI.MainActivity;
-import com.jzap.turing.turinggame.UI.PeerDisplayActivity;
+import com.jzap.turing.turinggame.UI.PlayersUIActivity;
 
 /**
  * Created by JZ_W541 on 11/25/2015.
  *
  */
 
-// Disseminates messages to PeerDisplayActivity from
+// Disseminates messages to PlayersUIActivity from
 // other threads and other classes
 public class SessionMessageHandler extends Handler {
 
     private static final String mTag = "SessionMessageHandler";
 
-    private PeerDisplayActivity mActivity;
+    private PlayersUIActivity mActivity;
 
-    public SessionMessageHandler(PeerDisplayActivity activity) {
+    public SessionMessageHandler(PlayersUIActivity activity) {
         mActivity = activity;
     }
 
@@ -29,19 +29,17 @@ public class SessionMessageHandler extends Handler {
     public void handleMessage(android.os.Message message) {
 
         switch(message.what) {
-            case SessionMessageTypes.CONTENT_QUESTION : mActivity.setQuestion((String) message.obj);
+            case LocalSessionMessageTypes.CONTENT_QUESTION : mActivity.setQuestion((String) message.obj);
                 break;
-            case SessionMessageTypes.CONTENT_SESSION : mActivity.setSession((Session) message.obj);
+            case LocalSessionMessageTypes.CONTENT_SESSION : mActivity.setSession((Session) message.obj);
                 break;
-            case SessionMessageTypes.CONTROL_ENABLE_ANSWER_BUTTON : mActivity.getSubmitAnswerButton().setEnabled(true);
-                Log.i(mTag, "Attempting to enable submit button");
+            case LocalSessionMessageTypes.CONTROL_ENABLE_ANSWER_BUTTON : mActivity.getSubmitAnswerButton().setEnabled(true);
                 break;
-            case SessionMessageTypes.CONTROL_DISABLE_ANSWER_BUTTON: mActivity.getSubmitAnswerButton().setEnabled(false);
-                Log.i(mTag, "Attempting to disable submit button");
+            case LocalSessionMessageTypes.CONTROL_DISABLE_ANSWER_BUTTON: mActivity.getSubmitAnswerButton().setEnabled(false);
                 break;
-            case SessionMessageTypes.CONTROL_ENABLE_VOTING: ((MainActivity) mActivity).getPlayersManager().enableVoting(true); // TODO : Bad design (cast)
+            case LocalSessionMessageTypes.CONTROL_ENABLE_VOTING: mActivity.getPlayersManager().enableVoting(true);
                 break;
-            case SessionMessageTypes.CONTROL_DISABLE_VOTING: ((MainActivity) mActivity).getPlayersManager().enableVoting(false);
+            case LocalSessionMessageTypes.CONTROL_DISABLE_VOTING: mActivity.getPlayersManager().enableVoting(false);
                 break;
         }
     }

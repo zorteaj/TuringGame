@@ -21,7 +21,7 @@ public class DumbAiPlayer extends AiPlayer {
     }
 
     public SessionMessage answerQuestion() {
-        mAnswerSessionMessage = new SessionMessage(this, SessionMessage.Type.ANSWER, calculateAnswer());
+        mAnswerSessionMessage = new SessionMessage(this, SessionMessage.NetType.ANSWER, calculateAnswer());
         return mAnswerSessionMessage;
     }
 
@@ -34,13 +34,19 @@ public class DumbAiPlayer extends AiPlayer {
         return mAnswers.get(random.nextInt(mAnswers.size()));
     }
 
+    // Hard-coded set of answers. A real AI Player
+    // would use NLP tools to generate answers based
+    // on the question
     private void bootstrap() {
         mAnswers.add("Yes");
         mAnswers.add("No");
+        mAnswers.add("yes");
+        mAnswers.add("no");
         mAnswers.add("I'd rather not");
         mAnswers.add("i'll get back to u on that");
         mAnswers.add("i dunno");
-        mAnswers.add("Who's askin?");
+        mAnswers.add("who's askin?");
+        mAnswers.add("ghfghhh");
     }
 
 }

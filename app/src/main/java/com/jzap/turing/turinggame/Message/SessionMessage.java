@@ -11,19 +11,19 @@ public class SessionMessage implements Serializable {
 
     private String mPlayerId; // Device MAC Address OR "AI" for AI
     private String mPlayerName;
-    private Type mType;
+    private NetType mNetType;
     private String mBody;
 
-    public enum Type {QUESTION_REQUEST, QUESTION, ANSWER, VOTE}
+    public enum NetType {QUESTION_REQUEST, QUESTION, ANSWER, VOTE}
 
-    public SessionMessage(Player player, Type type, String body) {
-        this(player.getId(), player.getName(), type, body);
+    public SessionMessage(Player player, NetType netType, String body) {
+        this(player.getId(), player.getName(), netType, body);
     }
 
-    public SessionMessage(String playerId, String playerName, Type type, String body) {
-        mPlayerName = playerName;
+    public SessionMessage(String playerId, String playerName, NetType netType, String body) {
         mPlayerId = playerId;
-        mType = type;
+        mPlayerName = playerName;
+        mNetType = netType;
         mBody = body;
     }
 
@@ -33,8 +33,8 @@ public class SessionMessage implements Serializable {
 
     public String getPlayerName()  {return mPlayerName;}
 
-    public Type getType() {
-        return mType;
+    public NetType getType() {
+        return mNetType;
     }
 
     public String getBody() {

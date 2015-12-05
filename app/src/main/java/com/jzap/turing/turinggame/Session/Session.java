@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.jzap.turing.turinggame.Message.SessionMessage;
-import com.jzap.turing.turinggame.Message.SessionMessageTypes;
+import com.jzap.turing.turinggame.Message.LocalSessionMessageTypes;
 import com.jzap.turing.turinggame.Player.AiPlayer;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 import com.jzap.turing.turinggame.Player.DumbAiPlayer;
@@ -64,7 +64,7 @@ abstract public class Session implements Runnable {
             List<SessionMessage> answersSessionMessages = (List<SessionMessage>) mIn.readObject();
 
             for(int i = 0; i < answersSessionMessages.size(); i++) {
-                if (answersSessionMessages.get(i).getType() == SessionMessage.Type.ANSWER) {
+                if (answersSessionMessages.get(i).getType() == SessionMessage.NetType.ANSWER) {
                     Log.i(mTag, "Answer = " + answersSessionMessages.get(i).getBody());
                     mPlayersManager.processAnswer(answersSessionMessages.get(i));
                 } else {
@@ -91,7 +91,7 @@ abstract public class Session implements Runnable {
     }
 
     protected void publishVote(String playerId) {
-        SessionMessage voteSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.VOTE, playerId);
+        SessionMessage voteSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.VOTE, playerId);
         sendMessage(voteSessionMessage);
     }
 
@@ -99,7 +99,7 @@ abstract public class Session implements Runnable {
         try {
             SessionMessage voteSessionMessage = (SessionMessage) mIn.readObject();
 
-            if(voteSessionMessage.getType() == SessionMessage.Type.VOTE) {
+            if(voteSessionMessage.getType() == SessionMessage.NetType.VOTE) {
                 processVote(voteSessionMessage.getPlayerId(), voteSessionMessage.getBody());
             }
         } catch (ClassNotFoundException e) {
@@ -154,32 +154,32 @@ abstract public class Session implements Runnable {
 
     protected void enableAnswering(boolean enable) {
         if(enable) {
-            mHandler.obtainMessage(SessionMessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
+            mHandler.obtainMessage(LocalSessionMessageTypes.CONTROL_ENABLE_ANSWER_BUTTON).sendToTarget();
             mAnsweringEnabled = true;
         } else {
-            mHandler.obtainMessage(SessionMessageTypes.CONTROL_DISABLE_ANSWER_BUTTON).sendToTarget();
+            mHandler.obtainMessage(LocalSessionMessageTypes.CONTROL_DISABLE_ANSWER_BUTTON).sendToTarget();
             mAnsweringEnabled = false;
         }
     }
 
     protected void enableVoting(boolean enable) {
         if(enable) {
-            mHandler.obtainMessage(SessionMessageTypes.CONTROL_ENABLE_VOTING).sendToTarget();
+            mHandler.obtainMessage(LocalSessionMessageTypes.CONTROL_ENABLE_VOTING).sendToTarget();
             mVotingEnabled = true;
         } else {
-            mHandler.obtainMessage(SessionMessageTypes.CONTROL_DISABLE_VOTING).sendToTarget();
+            mHandler.obtainMessage(LocalSessionMessageTypes.CONTROL_DISABLE_VOTING).sendToTarget();
             mVotingEnabled = false;
         }
     }
 
     protected void checkForReadyState() {
-        if(((MainActivity) mPlayersManager.getActivity()).isReady()) { // TODO : Bad design (cast)
+        if(mPlayersManager.getActivity().isReady()) {
             setState(SessionState.READY);
         }
     }
 
     protected void postAnswersLocally() {
-        SessionMessage thisPlayersAnswerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
+        SessionMessage thisPlayersAnswerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
         mPlayersManager.processAnswer((thisPlayersAnswerSessionMessage));
     }
 

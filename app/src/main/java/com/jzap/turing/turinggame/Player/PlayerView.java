@@ -30,12 +30,8 @@ public class PlayerView extends LinearLayout {
     private ViewGroup.LayoutParams mLayoutParams;
     private MainActivity mActivity;
 
-    // TODO : Give these a boarder so visually distinguishable
-
     public PlayerView(Context context, String playerId, String playerName) {
         super(context);
-
-        Log.i(mTag, "Constructing Player view");
 
         mPlayerId = playerId;
         mPlayerName = playerName;
@@ -55,7 +51,7 @@ public class PlayerView extends LinearLayout {
         setAnswer("");
         setPoints(0);
 
-        mActivity = (MainActivity) context; // TODO : Test
+        mActivity = (MainActivity) context;
 
         setUpOnClickListener();
         setClickable(false);

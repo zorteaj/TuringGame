@@ -4,7 +4,7 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
-import com.jzap.turing.turinggame.Message.SessionMessageTypes;
+import com.jzap.turing.turinggame.Message.LocalSessionMessageTypes;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 
 
@@ -44,7 +44,7 @@ public class SessionManager implements WifiP2pManager.ConnectionInfoListener {
         }
 
         if(mSession != null) {
-            mHandler.obtainMessage(SessionMessageTypes.CONTENT_SESSION, mSession).sendToTarget(); // Pass Session reference to PeerDisplayActivity to sync UI state with Session state
+            mHandler.obtainMessage(LocalSessionMessageTypes.CONTENT_SESSION, mSession).sendToTarget(); // Pass Session reference to PlayersUIActivity to sync UI state with Session state
             new Thread(mSession).start();
         }
 

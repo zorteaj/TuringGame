@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.jzap.turing.turinggame.Message.SessionMessage;
-import com.jzap.turing.turinggame.Message.SessionMessageTypes;
+import com.jzap.turing.turinggame.Message.LocalSessionMessageTypes;
 import com.jzap.turing.turinggame.NLP.DumbQuestionGenerator;
 import com.jzap.turing.turinggame.NLP.QuestionGenerator;
 import com.jzap.turing.turinggame.Player.PlayersManager;
@@ -29,7 +29,7 @@ public class GroupOwnerSession extends Session {
     private QuestionGenerator mQuestionGenerator = null;
 
     public GroupOwnerSession(PlayersManager playersManager, Handler handler) {
-        super(playersManager, handler); // TODO : Only for test
+        super(playersManager, handler);
         mQuestionGenerator = new DumbQuestionGenerator();
     }
 
@@ -116,7 +116,7 @@ public class GroupOwnerSession extends Session {
 
         List<SessionMessage> answerSessionMessages = new ArrayList<>();
 
-        SessionMessage playerAnswerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.ANSWER, mAnswer);
+        SessionMessage playerAnswerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.ANSWER, mAnswer);
         SessionMessage aiAnswerSessionMessage = mAiPlayer.answerQuestion();
 
         answerSessionMessages.add(playerAnswerSessionMessage);
@@ -140,7 +140,7 @@ public class GroupOwnerSession extends Session {
         if (mIn != null) {
             try {
                 questionSessionMessage = (SessionMessage) mIn.readObject();
-                if (questionSessionMessage.getType() == SessionMessage.Type.QUESTION_REQUEST) {
+                if (questionSessionMessage.getType() == SessionMessage.NetType.QUESTION_REQUEST) {
                     processQuestionRequest();
                 }
             } catch (ClassNotFoundException e) {
@@ -162,10 +162,10 @@ public class GroupOwnerSession extends Session {
 
     private void publishQuestion(String question) {
         // Display on this device
-        mHandler.obtainMessage(SessionMessageTypes.CONTENT_QUESTION, question).sendToTarget();
+        mHandler.obtainMessage(LocalSessionMessageTypes.CONTENT_QUESTION, question).sendToTarget();
 
         // Create question SessionMessage and publish to peer device(s)
-        SessionMessage questionSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.QUESTION, question);
+        SessionMessage questionSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.QUESTION, question);
         sendMessage(questionSessionMessage);
 
         setState(SessionState.ANSWERING);

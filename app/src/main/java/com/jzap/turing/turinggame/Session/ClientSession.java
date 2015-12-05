@@ -3,7 +3,7 @@ package com.jzap.turing.turinggame.Session;
 import android.util.Log;
 
 import com.jzap.turing.turinggame.Message.SessionMessage;
-import com.jzap.turing.turinggame.Message.SessionMessageTypes;
+import com.jzap.turing.turinggame.Message.LocalSessionMessageTypes;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 
 import java.io.IOException;
@@ -107,7 +107,7 @@ public class ClientSession extends Session {
     @Override
     protected void answerQuestion() {
         List<SessionMessage> answerSessionMessages = new ArrayList<>();
-        SessionMessage answerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.ANSWER, mAnswer); // TODO : Consider making answerSessionMessages a member, putting the main code in interface
+        SessionMessage answerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.ANSWER, mAnswer); // TODO : Consider making answerSessionMessages a member, putting the main code in interface
         answerSessionMessages.add(answerSessionMessage);
 
         sendMessages(answerSessionMessages);
@@ -115,7 +115,7 @@ public class ClientSession extends Session {
     }
 
     private void processQuestion(String question) {
-        mHandler.obtainMessage(SessionMessageTypes.CONTENT_QUESTION, question).sendToTarget();
+        mHandler.obtainMessage(LocalSessionMessageTypes.CONTENT_QUESTION, question).sendToTarget();
         setState(SessionState.ANSWERING);
     }
 
@@ -124,7 +124,7 @@ public class ClientSession extends Session {
         try {
             if(mIn != null) {
                 SessionMessage questionSessionMessage = (SessionMessage) mIn.readObject();
-                if (questionSessionMessage.getType() == SessionMessage.Type.QUESTION) {
+                if (questionSessionMessage.getType() == SessionMessage.NetType.QUESTION) {
                     processQuestion(questionSessionMessage.getBody());
                 } else {
                 }
@@ -137,7 +137,7 @@ public class ClientSession extends Session {
     }
 
     private void requestQuestion() {
-        SessionMessage questionRequestSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.Type.QUESTION_REQUEST, "");
+        SessionMessage questionRequestSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.QUESTION_REQUEST, "");
         sendMessage(questionRequestSessionMessage);
         setState(SessionState.WAITING_FOR_QUESTION);
     }

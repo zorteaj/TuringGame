@@ -10,12 +10,9 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.jzap.turing.turinggame.UI.MainActivity;
-import com.jzap.turing.turinggame.UI.PeerDisplayActivity;
+import com.jzap.turing.turinggame.UI.PlayersUIActivity;
 import com.jzap.turing.turinggame.Player.PlayersManager;
 import com.jzap.turing.turinggame.Session.SessionManager;
 
@@ -30,7 +27,7 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
 
     private String mTag = "WifiP2pBroadcastReceiver";
 
-    private PeerDisplayActivity mActivity;
+    private PlayersUIActivity mActivity;
     private WifiP2pManager mManager;
     private WifiP2pManager.Channel mChannel;
 
@@ -38,7 +35,7 @@ public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
     private List mPeers = new ArrayList();
 
 
-    public WifiP2pBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, PeerDisplayActivity activity) {
+    public WifiP2pBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, PlayersUIActivity activity) {
 
         super();
 
