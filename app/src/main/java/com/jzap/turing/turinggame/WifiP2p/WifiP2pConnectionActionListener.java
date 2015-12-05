@@ -24,6 +24,6 @@ public class WifiP2pConnectionActionListener implements WifiP2pManager.ActionLis
 
     @Override
     public void onFailure(int reason) {
-        Log.i(mTag, "Connection initiation failed because " + reason + ". Trying again...");
+        Log.i(mTag, "Connection initiation failed because " + reason);
     }
 }

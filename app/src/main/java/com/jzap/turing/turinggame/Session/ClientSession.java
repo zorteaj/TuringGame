@@ -37,7 +37,7 @@ public class ClientSession extends Session {
         init();
 
         // Synchronously designed protocol
-        while (mSessionState != SessionState.TERMINATE) {  //  Todo: Make sure all blocking requests timeout so this condition is hit on termination, instead of app hanging
+        while (mSessionState != SessionState.TERMINATE) {
             switch(mSessionState) {
                 case COLD:
                     checkForReadyState();
@@ -90,7 +90,7 @@ public class ClientSession extends Session {
         mSocket = new Socket();
         try {
             if (mSocket != null) {
-                mSocket.connect(new InetSocketAddress(mGroupOwnerAddress, mPort)); // TODO : Add timeout?
+                mSocket.connect(new InetSocketAddress(mGroupOwnerAddress, mPort));
                 mOut = new ObjectOutputStream(mSocket.getOutputStream());
                 mIn = new ObjectInputStream(mSocket.getInputStream());
             }
@@ -107,7 +107,7 @@ public class ClientSession extends Session {
     @Override
     protected void answerQuestion() {
         List<SessionMessage> answerSessionMessages = new ArrayList<>();
-        SessionMessage answerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.ANSWER, mAnswer); // TODO : Consider making answerSessionMessages a member, putting the main code in interface
+        SessionMessage answerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.ANSWER, mAnswer);
         answerSessionMessages.add(answerSessionMessage);
 
         sendMessages(answerSessionMessages);
@@ -119,14 +119,14 @@ public class ClientSession extends Session {
         setState(SessionState.ANSWERING);
     }
 
-    private void listenForAndProcessQuestion() { // TODO : Commonize these listenForAndProcess methods
-        Log.i(mTag, "listening for a processing question");
+    private void listenForAndProcessQuestion() {
         try {
             if(mIn != null) {
                 SessionMessage questionSessionMessage = (SessionMessage) mIn.readObject();
                 if (questionSessionMessage.getType() == SessionMessage.NetType.QUESTION) {
                     processQuestion(questionSessionMessage.getBody());
                 } else {
+                    Log.i(mTag, "Unexpected SessionMessage type");
                 }
             }
         } catch (ClassNotFoundException e) {

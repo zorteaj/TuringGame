@@ -11,6 +11,7 @@ import com.jzap.turing.turinggame.Session.SessionMessageHandler;
 /**
  * Created by JZ_W541 on 11/25/2015.
  */
+// Activity to display Players
 public interface PlayersUIActivity {
     void setSessionManager(SessionManager sessionManager);
     void setQuestion(String question);
@@ -20,4 +21,5 @@ public interface PlayersUIActivity {
     LinearLayout getPlayersLinearLayout();
     boolean isReady();
     PlayersManager getPlayersManager();
+    void removeProgressBar();
 }

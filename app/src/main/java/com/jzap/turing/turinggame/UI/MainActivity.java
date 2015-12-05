@@ -31,16 +31,16 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
 
     private static final String mTag = "MainActivity";
 
-    private WifiP2pManager mManager = null;
-    private WifiP2pManager.Channel mChannel = null;
-    private WifiP2pBroadcastReceiver mReceiver = null;
+    private WifiP2pManager mManager;
+    private WifiP2pManager.Channel mChannel;
+    private WifiP2pBroadcastReceiver mReceiver;
 
-    private SessionManager mSessionManager = null;
+    private SessionManager mSessionManager;
 
-    private PlayersManager mPlayersManager = null; // TODO : Test
+    private PlayersManager mPlayersManager;
 
-    private SessionMessageHandler mHandler = null;
-    private Session mSession = null;
+    private SessionMessageHandler mHandler;
+    private Session mSession;
 
     private LinearLayout mMain_LinearLayout;
     private LinearLayout mPlayers_LinearLayout;
@@ -90,16 +90,14 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
 
     @Override
     public void onResume() {
-        Log.i(mTag, "On Resume");
         super.onResume();
         if(!mInit) {
-            init();  //TODO : This may simply be a workaround to a bug wherein the activity can be running, when mInit wasn't called (or at least, broadcast receiver wasn't registered) - or this may be the legit fix...
+            init();
         }
     }
 
     @Override
     public void onPause() {
-        Log.i(mTag, "On Pause");
         super.onPause();
         cleanUp();
     }
@@ -108,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
         if(!mInit) {
             mHandler = new SessionMessageHandler(this);
             initializeUiViews();
-            mPlayersManager = new PlayersManager(this); // TODO : Test
+            mPlayersManager = new PlayersManager(this);
             Player thisPlayer = new Player(mPlayersManager, "You", true);
             initializeWifiP2pNetwork();
         }
@@ -119,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
         mInit = false;
         if(mReceiver != null) {
             try {
-                unregisterReceiver(mReceiver); // TODO : Figure how I'm sometimes getting into a state where this is not registered here!!
+                unregisterReceiver(mReceiver);
             } catch(IllegalArgumentException e) {
                 e.printStackTrace();
             }
@@ -212,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
 
     public void startPeerDiscovery() {
         if(!mInit) {
-            init(); // TODO : This may simply be a workaround to a bug wherein the activity can be running, when mInit wasn't called (or at least, broadcast receiver wasn't registered)
+            init();
         }
 
         if(mManager != null) {
@@ -239,7 +237,6 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
 
 
     public void beginGameClicked(View v) {
-        Log.i(mTag, "Begin Game Button Clicked");
         if(mReceiver != null) {
             mReceiver.connect();
         }
@@ -263,7 +260,6 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
     }
 
     public void submitAnswerClicked(View v) {
-        Log.i(mTag, "Submit Answer Button Clicked");
         if(mPlayersManager != null) {
             mPlayersManager.shufflePlayersAndHideNames();
         }
@@ -272,8 +268,6 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
             mAnswer_EditText.setText("");
         }
         hideSoftKeyboard();
-
-        // Check if no view has focus:
     }
 
     private void hideSoftKeyboard() {
@@ -286,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
 
     @Override
     public void setQuestion(String question) {
-        mQuestion_TextView.setText("Question: " + question); // TODO : There are nicer ways of doing this
+        mQuestion_TextView.setText("Question: " + question);
     }
 
     @Override
@@ -328,12 +322,12 @@ public class MainActivity extends AppCompatActivity implements PlayersUIActivity
     public void removeProgressBar() {
 
         if(mDiscoverPeers_ProgressBar != null) {
-            ((ViewGroup) mDiscoverPeers_ProgressBar.getParent()).removeView(mDiscoverPeers_ProgressBar); // TODO : This can't be good design
+            ((ViewGroup) mDiscoverPeers_ProgressBar.getParent()).removeView(mDiscoverPeers_ProgressBar);
             mDiscoverPeers_ProgressBar = null;
         }
 
         if(mDiscoverPeers_TextView != null) {
-            ((ViewGroup) mDiscoverPeers_TextView.getParent()).removeView(mDiscoverPeers_TextView); // TODO : This can't be good design
+            ((ViewGroup) mDiscoverPeers_TextView.getParent()).removeView(mDiscoverPeers_TextView);
             mDiscoverPeers_TextView = null;
         }
     }

@@ -29,17 +29,13 @@ public class SessionManager implements WifiP2pManager.ConnectionInfoListener {
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
 
-        Log.i(mTag, "Connection Info Available...");
-
         mGroupOwnerAddress = info.groupOwnerAddress.getHostAddress();
 
         // After the group negotiation, we can determine the group owner.
         if (info.groupFormed && info.isGroupOwner) {
-            Log.i(mTag, "I'm the group owner");
             mSession = new GroupOwnerSession(mPlayersManager, mHandler);
         } else if (info.groupFormed) {
             // The other device acts as the client.
-            Log.i(mTag, "I'm not the group owner");
             mSession = new ClientSession(mPlayersManager, mGroupOwnerAddress, mHandler);
         }
 

@@ -24,9 +24,9 @@ public class GroupOwnerSession extends Session {
 
     private static final String mTag = "GroupOwnerSession";
 
-    private ServerSocket mServerSocket = null;
+    private ServerSocket mServerSocket;
 
-    private QuestionGenerator mQuestionGenerator = null;
+    private QuestionGenerator mQuestionGenerator;
 
     public GroupOwnerSession(PlayersManager playersManager, Handler handler) {
         super(playersManager, handler);
@@ -40,6 +40,7 @@ public class GroupOwnerSession extends Session {
 
         init();
 
+        // Synchronously designed protocol
         while (mSessionState != SessionState.TERMINATE) {
             switch(mSessionState) {
                 case COLD:

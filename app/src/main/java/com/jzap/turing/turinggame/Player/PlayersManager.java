@@ -1,12 +1,10 @@
 package com.jzap.turing.turinggame.Player;
 
 import android.net.wifi.p2p.WifiP2pDevice;
-import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
 import android.widget.LinearLayout;
 
-import com.jzap.turing.turinggame.UI.MainActivity;
 import com.jzap.turing.turinggame.Message.SessionMessage;
 import com.jzap.turing.turinggame.UI.PlayersUIActivity;
 
@@ -23,7 +21,7 @@ public class PlayersManager {
     private static final String mTag = "PlayersManager";
 
     // This device's player
-    private Player mThisPlayer = null;
+    private Player mThisPlayer;
     private PlayersUIActivity mActivity;
     private List<Player> mPlayersList;
     private LinearLayout mPlayers_LinearLayout;
@@ -67,7 +65,7 @@ public class PlayersManager {
             player.setName(sessionMessage.getPlayerName());
             player.setAnswer(sessionMessage.getBody());
         } else {
-            // TODO : Add player??
+            // Add player??
             Log.i(mTag, "Add failed");
         }
     }

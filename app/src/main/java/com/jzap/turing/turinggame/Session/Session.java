@@ -23,7 +23,7 @@ abstract public class Session implements Runnable {
 
     private static final String mTag = "Session";
 
-    protected static final int mPort = 8886; // TODO : Is this number okay?
+    protected static final int mPort = 8886;
 
     protected enum SessionState {COLD, READY, WAITING_FOR_QUESTION, ANSWERING, SENDING_ANSWER, ANSWERED, VOTING, WAITING_FOR_VOTES, TERMINATE}
     protected SessionState mSessionState;
@@ -46,7 +46,7 @@ abstract public class Session implements Runnable {
         mPlayersManager = manager;
         mHandler = handler;
         mAiPlayer = new DumbAiPlayer(mPlayersManager);
-        mSessionState = SessionState.COLD; // TODO : Use this?
+        mSessionState = SessionState.COLD;
     }
 
     abstract protected void init();
@@ -59,30 +59,25 @@ abstract public class Session implements Runnable {
     }
 
     protected void listenForAndProcessAnswers() {
-        Log.i(mTag, "Listening for and processing answers");
         try {
             List<SessionMessage> answersSessionMessages = (List<SessionMessage>) mIn.readObject();
 
             for(int i = 0; i < answersSessionMessages.size(); i++) {
                 if (answersSessionMessages.get(i).getType() == SessionMessage.NetType.ANSWER) {
-                    Log.i(mTag, "Answer = " + answersSessionMessages.get(i).getBody());
                     mPlayersManager.processAnswer(answersSessionMessages.get(i));
                 } else {
-                    Log.i(mTag, "Not answer type");
+                    Log.i(mTag, "Unexpected SessionMessage type");
                 }
             }
         } catch (ClassNotFoundException e) {
-            Log.i(mTag, "Class exception");
             e.printStackTrace();
         } catch (IOException e) {
-            Log.i(mTag, "IO exception");
             e.printStackTrace();
         }
         setState(SessionState.VOTING);
     }
 
     public void castVote(String playerId) {
-        Log.i(mTag, "Voted for " + playerId);
         // Process the vote from this player locally
         processVote(mPlayersManager.getThisPlayer().getId(), playerId);
         // Publish the vote from this player onto the network
@@ -110,7 +105,6 @@ abstract public class Session implements Runnable {
     }
 
     protected void processVote(String voter, String vote) {
-        Log.i(mTag, "Processing Vote");
         if(vote.equals(mAiPlayer.getId())) {
             mPlayersManager.findPlayerById(voter).addPoint();
         } else {
@@ -179,7 +173,7 @@ abstract public class Session implements Runnable {
     }
 
     protected void postAnswersLocally() {
-        SessionMessage thisPlayersAnswerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.ANSWER, mAnswer); // TODO : Consider making answerMessages a member, putting the main code in interface
+        SessionMessage thisPlayersAnswerSessionMessage = new SessionMessage(mPlayersManager.getThisPlayer(), SessionMessage.NetType.ANSWER, mAnswer);
         mPlayersManager.processAnswer((thisPlayersAnswerSessionMessage));
     }
 

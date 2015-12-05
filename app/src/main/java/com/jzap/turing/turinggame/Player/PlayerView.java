@@ -78,7 +78,7 @@ public class PlayerView extends LinearLayout {
     }
 
     public void setAnswer(String answer) {
-        mAnswer_TextView.setText("Answer: " + answer); // TODO : There are nicer ways to do this
+        mAnswer_TextView.setText("Answer: " + answer);
     }
 
     public void setName(String name) {
@@ -92,11 +92,11 @@ public class PlayerView extends LinearLayout {
 
     public void setPoints(int points) {
         Log.i(mTag, "Setting points");
-        mPoints_TextView.setText("Points: " + String.valueOf(points)); // TODO : There are nicer ways to do this
+        mPoints_TextView.setText("Points: " + String.valueOf(points));
     }
 
     public void hidePoints() {
-        mPoints_TextView.setText("Points:"); // TODO : There are nicer ways to do this
+        mPoints_TextView.setText("Points:");
     }
 
 
@@ -108,7 +108,6 @@ public class PlayerView extends LinearLayout {
             public void onClick(View v) {
                 mActivity.getSession().castVote(mPlayerId);
                 mActivity.getPlayersManager().revealNames();
-                //mActivity.getPlayersManager().hideNames();
             }
         });
     }
